@@ -9,7 +9,8 @@
 MainController::MainController(IMainView& view, IInputReader& input_reader,
     ISampleRepository& sample_repository, IOrderRepository& order_repository, IClock& clock,
     ISubMenuController* sample_menu, ISubMenuController* order_menu, ISubMenuController* approval_menu,
-    ISubMenuController* production_menu, ProductionQueueProcessor* production_queue_processor)
+    ISubMenuController* production_menu, ProductionQueueProcessor* production_queue_processor,
+    ISubMenuController* release_menu)
     : view(view)
     , input_reader(input_reader)
     , sample_repository(sample_repository)
@@ -20,6 +21,7 @@ MainController::MainController(IMainView& view, IInputReader& input_reader,
     , approval_menu(approval_menu)
     , production_menu(production_menu)
     , production_queue_processor(production_queue_processor)
+    , release_menu(release_menu)
 {
 }
 
@@ -66,7 +68,13 @@ bool MainController::processCommand(const std::string& command)
         return true;
     }
 
-    if (command == "4" || command == "6")
+    if (command == "6")
+    {
+        runSubMenuOrShowPlaceholder(release_menu);
+        return true;
+    }
+
+    if (command == "4")
     {
         runSubMenuOrShowPlaceholder(nullptr);
         return true;

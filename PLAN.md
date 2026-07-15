@@ -203,7 +203,7 @@
 
 **완료 기준**: 출고 처리 후 화면 표시 재고가 실제로 감소함을 확인, gmock 기반 단위 테스트
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase10_design.md` — 작성 완료(설계), 구현 대기
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase10_design.md` — ✅ 완료 (설계+구현)
 
 ---
 

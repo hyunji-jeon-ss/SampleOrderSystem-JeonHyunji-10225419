@@ -215,6 +215,37 @@ TEST(MainControllerTest, ProductionQueueProcessorAdvanceQueueCalledEachLoopItera
     controller.run();
 }
 
+TEST(MainControllerTest, ReleaseMenuPlaceholderMessageWhenNotProvided)
+{
+    MockMainView view;
+    MockInputReader input_reader;
+    MockSampleRepository sample_repository;
+    MockOrderRepository order_repository;
+    MockClock clock;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock);
+
+    EXPECT_CALL(view, showMessage(_)).Times(1);
+
+    EXPECT_TRUE(controller.processCommand("6"));
+}
+
+TEST(MainControllerTest, ReleaseMenuCommandDelegatesToSubMenuControllerWhenProvided)
+{
+    MockMainView view;
+    MockInputReader input_reader;
+    MockSampleRepository sample_repository;
+    MockOrderRepository order_repository;
+    MockClock clock;
+    MockSubMenuController release_menu;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock,
+        nullptr, nullptr, nullptr, nullptr, nullptr, &release_menu);
+
+    EXPECT_CALL(release_menu, run()).Times(1);
+    EXPECT_CALL(view, showMessage(_)).Times(0);
+
+    EXPECT_TRUE(controller.processCommand("6"));
+}
+
 TEST(MainControllerTest, UnknownCommandShowsErrorMessage)
 {
     MockMainView view;

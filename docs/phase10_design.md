@@ -168,3 +168,10 @@ void ReleaseController::handleReleaseFlow(const ReleaseOrderRow& row)
 
 ## 다음 Phase로 이월되는 항목
 - 상태별 주문 건수 집계, 시료별 재고 현황(화면 표시 재고 기준) 통합 모니터링 화면 → Phase 11
+
+## 구현 결과 (완료)
+- 설계 그대로 구현됨. `IReleaseView`(`ReleaseOrderRow`), `ConsoleReleaseView`, `ReleaseController` 신규 — `ApprovalController`와 동일하게 목록을 캐싱하지 않고 `run()`/`processCommand()` 양쪽에서 매번 `buildConfirmedRows()`를 새로 호출.
+- `MainController`에 `release_menu`(여섯 번째 trailing default)와 함께 연동, `processCommand("6")`이 위임되도록 분리(기존엔 "4"/"6"이 한꺼번에 플레이스홀더 처리됐었음 — "4"만 남기고 "6"을 분리).
+- `main.cpp`에 `ConsoleReleaseView`/`ReleaseController` 인스턴스 배선.
+- gmock 테스트 69개 전체 통과 (`ReleaseControllerTest` 신규 6개: 정상 출고, **수율 보정 여분이 있는 주문의 출고 시 `order.quantity`만 차감되는지(핵심 검증)**, 취소, 잘못된 번호, `CONFIRMED`만 필터링, 뒤로가기 / `MainControllerTest` 신규 2개: `release_menu` 위임, 플레이스홀더).
+- 실제 실행(수동 스모크 테스트)으로 검증: `physical_stock 75 ea`인 시료에서 수량 40 주문을 출고 처리 → 주문 상태가 `RELEASED`로 전환되고, 목록에서 해당 주문이 사라지고 남은 `CONFIRMED` 주문만 계속 표시됨을 확인. `physical_stock`이 정확히 40만큼 줄어든 결과가 메인 메뉴의 총 재고에도 그대로 반영됨(2215 → 2175, -40 ea).
