@@ -15,8 +15,11 @@
 - 재고는 **내부 판단용 가용 재고(availableStock)**와 **화면 표시용 재고(physicalStock)**로 이원화하여 관리 (`PRD.md` 6.4, 6.5 참고) — Phase 6/8에서 구현 예정, 아직 미구현
 - 생산라인은 현실 시간(ms 단위) 기반 타이머로 동작하며, 프로그램 재기동 시 저장된 시작/완료 시각을 기준으로 상태를 복원한다 (`PRD.md` 6.6 참고) — Phase 9에서 구현 예정, 아직 미구현
 
+## 설계 문서
+Phase별 상세 설계는 `docs/phase{NN}_design.md`에 기록한다 (예: `docs/phase05_design.md`). 새 Phase를 시작하기 전에 해당 문서를 먼저 작성/갱신한다.
+
 ## 진행 상황
-- **Phase 5 완료**: 도메인 모델(`Sample`/`Order`/`OrderStatus`), JSON Repository, `IClock`/`SystemClock`, 메인 메뉴 골격(표시·종료만 동작, 1~6번은 플레이스홀더) 구현 및 검증 완료.
+- **Phase 5 완료**: 도메인 모델(`Sample`/`Order`/`OrderStatus`), JSON Repository, `IClock`/`SystemClock`, 메인 메뉴 골격(표시·종료만 동작, 1~6번은 플레이스홀더) 구현 및 검증 완료. 설계 문서: `docs/phase05_design.md`
 - 다음: Phase 6(시료 관리) — `MainController::processCommand`의 "1" 분기에 실제 시료 등록/조회/검색 기능을 연결.
 
 ## 개발 순서

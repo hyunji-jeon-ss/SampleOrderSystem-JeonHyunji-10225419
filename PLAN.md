@@ -115,6 +115,8 @@
 
 **완료 기준**: 메인 메뉴 표시 및 종료, 기존 PoC 테스트 이식 통과
 
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase05_design.md` — ✅ 완료 (도메인 모델, JSON Repository, IClock, 메인 메뉴 골격 구현 및 빌드/테스트 검증 완료)
+
 ---
 
 ## Phase 6 — 시료 관리 기능
@@ -229,3 +231,4 @@
 - Phase 1~4(PoC)는 각자 독립 저장소이므로 병렬로 진행 가능하나, 기본은 순서대로 진행한다.
 - Phase 5 이후 메인 프로젝트는 PoC의 "코드 이식"이지 "저장소 연결(submodule)"이 아님에 유의한다.
 - Phase 8, 9는 재고 이중 관리·실시간 처리라는 프로젝트의 핵심 난이도 구간이므로, 각 Phase 완료 후 반드시 완료 기준의 테스트 시나리오를 실행해 검증한다.
+- **Phase 5부터는 각 Phase마다 `SampleOrderSystem-JeonHyunji-10225419/docs/phase{NN}_design.md` 설계 문서를 작성한다** (번호는 2자리 0채움: `phase05`, `phase06`, ... `phase12`). Phase 착수 전에 먼저 설계를 문서화하고, 완료 후 실제 구현 내용/검증 결과를 반영한다. 각 문서는 해당 저장소의 `README.md`/`CLAUDE.md`와 이 `PLAN.md`의 해당 Phase 항목에서 링크로 연결한다.

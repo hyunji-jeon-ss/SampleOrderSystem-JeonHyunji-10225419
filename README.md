@@ -38,3 +38,4 @@ SampleOrderSystemTest/   # gmock 테스트, Lib 참조
 - `PRD.md`: 요구사항 정의
 - `PLAN.md`: Phase별 구현 계획
 - `CLAUDE.md`: 개발 가이드
+- `docs/phase{NN}_design.md`: Phase별 상세 설계 문서 (예: [`docs/phase05_design.md`](docs/phase05_design.md))
