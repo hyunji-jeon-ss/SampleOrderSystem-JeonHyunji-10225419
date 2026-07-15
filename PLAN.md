@@ -144,6 +144,8 @@
 
 **완료 기준**: 예약 생성 후 조회 시 `RESERVED` 상태 확인
 
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase07_design.md` — 작성 완료(설계), 구현 대기
+
 ---
 
 ## Phase 8 — 주문 승인/거절 기능 (재고 선점 로직 포함)
