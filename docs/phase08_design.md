@@ -177,3 +177,11 @@ void ApprovalController::handleApprovalFlow(const ApprovalOrderRow& row)
 
 ## 다음 Phase로 이월되는 항목
 - `PRODUCING` 주문의 실제 생산 큐 처리, 실시간 타이머, 재기동 복원, `physical_stock` 반영 → Phase 9
+
+## 구현 결과 (완료)
+- 설계와 한 가지 차이: `ApprovalController`가 목록을 멤버 변수(`current_rows`)에 캐싱하지 않고, **`run()`과 `processCommand()` 양쪽에서 매번 `buildReservedRows()`를 새로 호출**하도록 단순화했다. 캐싱된 상태가 없어 테스트가 훨씬 단순해지고(각 `processCommand()` 호출이 독립적으로 완결됨), 목록이 항상 최신 `order_repository`/`sample_repository` 상태를 반영한다는 이점도 있다.
+- `Order`에 `shortage_quantity`, `enqueued_at_millis` 필드 추가, `JsonOrderRepository` 직렬화에 반영.
+- `production/ProductionCalculator.h/.cpp` 신설 (`computeRealProductionQuantity`, `computeTotalProductionTimeMin`), 승인 화면 미리보기에서 사용 — Phase 9에서 동일 함수 재사용 예정.
+- `IApprovalView`/`ConsoleApprovalView`, `ApprovalController` 구현. `MainController`에 `approval_menu`(네 번째 trailing default) 연결.
+- gmock 테스트 49개 전체 통과 (`ApprovalControllerTest` 6개, `ProductionCalculatorTest` 5개 신규 — 재고 충분/부족/거절, **연속 승인 시 재고 중복 사용 방지(핵심 검증)**, 잘못된 번호, 뒤로가기).
+- 실제 실행으로 재고 30인 시료에 수량 20 주문 2건을 연속 승인 → 첫 주문은 재고 충분(CONFIRMED), 두 번째 주문은 화면에 "현재 재고(가용) 10 ea"로 정확히 표시되어 부족분 10으로 PRODUCING 전환됨을 확인. 승인 후 `samples.json`에서 `physical_stock`은 그대로, `available_stock`만 정확히 차감된 것도 확인.

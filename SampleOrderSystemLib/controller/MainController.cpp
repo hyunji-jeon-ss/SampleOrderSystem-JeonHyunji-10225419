@@ -8,7 +8,7 @@
 
 MainController::MainController(IMainView& view, IInputReader& input_reader,
     ISampleRepository& sample_repository, IOrderRepository& order_repository, IClock& clock,
-    ISubMenuController* sample_menu, ISubMenuController* order_menu)
+    ISubMenuController* sample_menu, ISubMenuController* order_menu, ISubMenuController* approval_menu)
     : view(view)
     , input_reader(input_reader)
     , sample_repository(sample_repository)
@@ -16,6 +16,7 @@ MainController::MainController(IMainView& view, IInputReader& input_reader,
     , clock(clock)
     , sample_menu(sample_menu)
     , order_menu(order_menu)
+    , approval_menu(approval_menu)
 {
 }
 
@@ -62,7 +63,20 @@ bool MainController::processCommand(const std::string& command)
         return true;
     }
 
-    if (command == "3" || command == "4" || command == "5" || command == "6")
+    if (command == "3")
+    {
+        if (approval_menu)
+        {
+            approval_menu->run();
+        }
+        else
+        {
+            view.showMessage("아직 구현되지 않은 기능입니다. (다음 Phase에서 구현 예정)");
+        }
+        return true;
+    }
+
+    if (command == "4" || command == "5" || command == "6")
     {
         view.showMessage("아직 구현되지 않은 기능입니다. (다음 Phase에서 구현 예정)");
         return true;

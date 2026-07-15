@@ -11,4 +11,6 @@ struct Order
     std::string customer_name;
     int quantity = 0;
     OrderStatus status = OrderStatus::RESERVED;
+    int shortage_quantity = 0;
+    long long enqueued_at_millis = 0;
 };

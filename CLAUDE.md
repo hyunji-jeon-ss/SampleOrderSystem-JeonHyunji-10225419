@@ -22,7 +22,8 @@ Phase별 상세 설계는 `docs/phase{NN}_design.md`에 기록한다 (예: `docs
 - **Phase 5 완료**: 도메인 모델(`Sample`/`Order`/`OrderStatus`), JSON Repository, `IClock`/`SystemClock`, 메인 메뉴 골격(표시·종료만 동작, 1~6번은 플레이스홀더) 구현 및 검증 완료. 설계 문서: `docs/phase05_design.md`
 - **Phase 6 완료**: 시료 등록/조회/검색(`SampleController`), `Sample`에 재고 필드(`physical_stock`/`available_stock`) 추가, `ISubMenuController` 서브메뉴 위임 패턴 확립. 설계 문서: `docs/phase06_design.md`
 - **Phase 7 완료**: 시료 주문(예약) 기능(`OrderController`) — 입력 내용 확인(Y/N) → 확정 시 저장+주문번호/상태 출력, 취소 시 미저장. `orderStatusToString`/`orderStatusFromString`을 `model/OrderStatusText.h/.cpp`로 공용 추출. 설계 문서: `docs/phase07_design.md`
-- 다음: Phase 8(주문 승인/거절) — 재고 이중 관리(`availableStock`/`physicalStock`) 로직 구현.
+- **Phase 8 완료**: 주문 승인/거절 기능(`ApprovalController`) — 재고 이중 관리(`available_stock`/`physical_stock`) 구현. 승인 시점 가용 재고로 충분/부족 분기, 부족 시 `Order.shortage_quantity`/`enqueued_at_millis` 기록. `production/ProductionCalculator.h/.cpp` 신설. 설계 문서: `docs/phase08_design.md`
+- 다음: Phase 9(생산라인) — `PRODUCING` 주문의 실시간 생산 처리, FIFO 큐, 재기동 복원.
 
 ## 개발 순서
 `PLAN.md`의 Phase 5부터 Phase 12까지 순서대로 진행한다. 각 Phase 완료 시 해당 Phase의 "완료 기준" 항목을 충족했는지 확인한다.

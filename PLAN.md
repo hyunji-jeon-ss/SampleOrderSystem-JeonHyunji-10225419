@@ -166,7 +166,7 @@
 - 승인 후 시료 조회(화면) 시 재고 수량이 아직 차감되지 않은 것으로 표시됨을 검증
 - gmock 기반 승인 로직 단위 테스트 (재고 충분/부족/거절 각 케이스)
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase08_design.md` — 작성 완료(설계), 구현 대기
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase08_design.md` — ✅ 완료 (재고 이중 관리, 승인/거절, 연속 승인 재고 중복 방지 구현 및 검증 완료)
 
 ---
 
