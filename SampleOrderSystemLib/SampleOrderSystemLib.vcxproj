@@ -71,6 +71,7 @@
     <ClInclude Include="model\Sample.h" />
     <ClInclude Include="model\Order.h" />
     <ClInclude Include="model\OrderStatus.h" />
+    <ClInclude Include="console\ConsoleUtil.h" />
     <ClInclude Include="clock\IClock.h" />
     <ClInclude Include="clock\SystemClock.h" />
     <ClInclude Include="clock\TimeFormat.h" />
@@ -89,6 +90,7 @@
     <ClInclude Include="controller\SampleController.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="console\ConsoleUtil.cpp" />
     <ClCompile Include="clock\SystemClock.cpp" />
     <ClCompile Include="clock\TimeFormat.cpp" />
     <ClCompile Include="repository\JsonSampleRepository.cpp" />

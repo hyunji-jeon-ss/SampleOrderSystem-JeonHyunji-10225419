@@ -80,6 +80,10 @@ class SampleController : public ISubMenuController
 - **평균 생산시간 단위를 ms → 분(min)으로 재변경** (사용자 요청, `PRD.md` 6.6 기존 결정 대체). `avg_production_time_ms`(long long) → `avg_production_time_min`(double)로 변경, 소수점 입력 허용(예: `0.1`min). Phase 9 실시간 타이머 계산 시 `분 * 60000`으로 ms 환산해서 사용할 예정.
 - **시료 목록/검색 결과에 페이지네이션 추가**: 5개씩 표시, 다 보여준 뒤 남은 항목이 있으면 "[N] 다음 페이지" 프롬프트 → `N`/`n` 입력 시에만 다음 페이지, 그 외 입력 시 종료. `SampleController::displayPaged()`로 공용화해 조회/검색 양쪽에서 재사용.
 
+## 변경 이력 (2)
+- **화면 클리어**: 사용자가 메뉴에서 선택할 때마다 화면을 지우고 결과를 보여주도록 변경. `console/ConsoleUtil.h/.cpp`에 Win32 콘솔 API(`FillConsoleOutputCharacter` 등) 기반 `clearConsoleScreen()`을 구현하고, `MainController`/`SampleController`의 `run()` 루프(메뉴 표시 전, 입력 직후, 페이지네이션 전환 시)에 적용. 콘솔이 아닌 환경(파이프/리다이렉션, 테스트)에서는 `GetConsoleScreenBufferInfo` 실패 시 안전하게 no-op.
+- **시료 목록/검색 테이블 정렬 고정**: 값 길이가 들쭉날쭉해 정렬이 어긋나던 문제를 고정폭 컬럼으로 해결. `ConsoleUtil`에 UTF-8 표시 너비를 고려한 `padEnd`(왼쪽 정렬)/`padStart`(오른쪽 정렬) 공용 함수를 추가해 한글(3바이트, 표시폭 2칸)과 ASCII를 함께 정렬한다. ID/이름은 왼쪽 정렬, 생산시간/수율/재고는 오른쪽 정렬.
+
 ## 구현 결과 (완료)
 - `Sample`에 `physical_stock`/`available_stock` 필드 추가, `JsonSampleRepository`가 두 필드 모두 영속화
 - `ISubMenuController` 도입, `MainController`가 `ISubMenuController* sample_menu = nullptr`(trailing default)로 서브메뉴에 위임하는 구조 확립 — 기존 생성자 호출/테스트는 변경 없이 컴파일됨

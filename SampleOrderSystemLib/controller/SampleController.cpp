@@ -1,5 +1,6 @@
 #include "controller/SampleController.h"
 
+#include "console/ConsoleUtil.h"
 #include "model/Sample.h"
 
 #include <algorithm>
@@ -35,8 +36,10 @@ void SampleController::run()
     bool running = true;
     while (running)
     {
+        clearConsoleScreen();
         view.showSampleMenu();
         const std::string command = input_reader.readLine();
+        clearConsoleScreen();
         running = processCommand(command);
     }
 }
@@ -134,6 +137,7 @@ void SampleController::displayPaged(const std::vector<Sample>& samples)
 
         view.showMessage("[N] 다음 페이지, 그 외 입력 시 종료 > ");
         const std::string command = input_reader.readLine();
+        clearConsoleScreen();
         if (command != "N" && command != "n") break;
     }
 }

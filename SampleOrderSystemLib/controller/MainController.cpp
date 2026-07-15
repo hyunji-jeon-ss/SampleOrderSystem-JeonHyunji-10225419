@@ -1,6 +1,7 @@
 #include "controller/MainController.h"
 
 #include "clock/TimeFormat.h"
+#include "console/ConsoleUtil.h"
 #include "model/Order.h"
 #include "model/OrderStatus.h"
 #include "model/Sample.h"
@@ -22,8 +23,10 @@ void MainController::run()
     bool running = true;
     while (running)
     {
+        clearConsoleScreen();
         view.showMainMenu(buildSummary());
         const std::string command = input_reader.readLine();
+        clearConsoleScreen();
         running = processCommand(command);
     }
 }
