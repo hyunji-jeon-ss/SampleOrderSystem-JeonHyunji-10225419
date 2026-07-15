@@ -16,7 +16,7 @@ namespace
         return Sample{
             element.at("id").get<std::string>(),
             element.at("name").get<std::string>(),
-            element.at("avg_production_time_ms").get<long long>(),
+            element.at("avg_production_time_min").get<double>(),
             element.at("yield").get<double>(),
             element.at("physical_stock").get<int>(),
             element.at("available_stock").get<int>()
@@ -28,7 +28,7 @@ namespace
         return json{
             {"id", sample.id},
             {"name", sample.name},
-            {"avg_production_time_ms", sample.avg_production_time_ms},
+            {"avg_production_time_min", sample.avg_production_time_min},
             {"yield", sample.yield},
             {"physical_stock", sample.physical_stock},
             {"available_stock", sample.available_stock}

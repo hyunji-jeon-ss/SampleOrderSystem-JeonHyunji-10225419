@@ -91,7 +91,7 @@ TEST_F(JsonSampleRepositoryTest, UpdateExistingSampleOverwritesFields)
     const std::optional<Sample> found = repository.findById(saved.id);
     ASSERT_TRUE(found.has_value());
     EXPECT_EQ(found->name, "Updated");
-    EXPECT_EQ(found->avg_production_time_ms, 200);
+    EXPECT_DOUBLE_EQ(found->avg_production_time_min, 200);
 }
 
 TEST_F(JsonSampleRepositoryTest, NewSampleStartsWithZeroStock)

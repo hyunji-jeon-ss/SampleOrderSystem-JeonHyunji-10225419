@@ -21,11 +21,11 @@ void ConsoleSampleView::showSamples(const std::vector<Sample>& samples)
         return;
     }
 
-    cout << "ID       이름                  평균생산시간(ms)   수율    재고" << endl;
+    cout << "ID       이름                  평균생산시간(min)   수율    재고" << endl;
     for (const Sample& sample : samples)
     {
         cout << sample.id << "    " << sample.name
-            << "   " << sample.avg_production_time_ms
+            << "   " << sample.avg_production_time_min
             << "   " << sample.yield
             << "   " << sample.physical_stock << " ea" << endl;
     }

@@ -34,3 +34,8 @@ CMakeCache.txt
 # OS
 Thumbs.db
 .DS_Store
+
+# 런타임 데이터 (JSON 영속성 파일)
+samples.json
+orders.json
+test_*.json

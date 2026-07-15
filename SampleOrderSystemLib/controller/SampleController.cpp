@@ -72,17 +72,17 @@ void SampleController::handleRegister()
     view.showMessage("시료 이름 > ");
     const std::string name = input_reader.readLine();
 
-    view.showMessage("평균 생산시간(ms) > ");
+    view.showMessage("평균 생산시간(min, 소수 가능 예: 0.1) > ");
     const std::string time_text = input_reader.readLine();
 
     view.showMessage("수율(0~1) > ");
     const std::string yield_text = input_reader.readLine();
 
-    long long avg_production_time_ms = 0;
+    double avg_production_time_min = 0.0;
     double yield = 0.0;
     try
     {
-        avg_production_time_ms = std::stoll(time_text);
+        avg_production_time_min = std::stod(time_text);
         yield = std::stod(yield_text);
     }
     catch (const std::exception&)
@@ -91,13 +91,13 @@ void SampleController::handleRegister()
         return;
     }
 
-    const Sample saved = sample_repository.save(Sample{ "", name, avg_production_time_ms, yield, 0, 0 });
+    const Sample saved = sample_repository.save(Sample{ "", name, avg_production_time_min, yield, 0, 0 });
     view.showMessage("등록 완료: " + saved.id);
 }
 
 void SampleController::handleList()
 {
-    view.showSamples(sample_repository.findAll());
+    displayPaged(sample_repository.findAll());
 }
 
 void SampleController::handleSearch()
@@ -111,5 +111,29 @@ void SampleController::handleSearch()
         if (containsIgnoreCase(sample.name, keyword)) matched.push_back(sample);
     }
 
-    view.showSamples(matched);
+    displayPaged(matched);
+}
+
+void SampleController::displayPaged(const std::vector<Sample>& samples)
+{
+    if (samples.empty())
+    {
+        view.showSamples(samples);
+        return;
+    }
+
+    constexpr size_t kPageSize = 5;
+    size_t offset = 0;
+    while (offset < samples.size())
+    {
+        const size_t end = std::min(offset + kPageSize, samples.size());
+        view.showSamples(std::vector<Sample>(samples.begin() + offset, samples.begin() + end));
+        offset = end;
+
+        if (offset >= samples.size()) break;
+
+        view.showMessage("[N] 다음 페이지, 그 외 입력 시 종료 > ");
+        const std::string command = input_reader.readLine();
+        if (command != "N" && command != "n") break;
+    }
 }

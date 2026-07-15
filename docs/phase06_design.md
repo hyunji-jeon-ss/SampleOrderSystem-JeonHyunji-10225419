@@ -76,6 +76,10 @@ class SampleController : public ISubMenuController
 - 검색어로 필터링된 결과만 표시되는지 확인
 - gmock 테스트 전체 통과, 로컬 빌드/실행으로 실제 콘솔 흐름 검증
 
+## 변경 이력
+- **평균 생산시간 단위를 ms → 분(min)으로 재변경** (사용자 요청, `PRD.md` 6.6 기존 결정 대체). `avg_production_time_ms`(long long) → `avg_production_time_min`(double)로 변경, 소수점 입력 허용(예: `0.1`min). Phase 9 실시간 타이머 계산 시 `분 * 60000`으로 ms 환산해서 사용할 예정.
+- **시료 목록/검색 결과에 페이지네이션 추가**: 5개씩 표시, 다 보여준 뒤 남은 항목이 있으면 "[N] 다음 페이지" 프롬프트 → `N`/`n` 입력 시에만 다음 페이지, 그 외 입력 시 종료. `SampleController::displayPaged()`로 공용화해 조회/검색 양쪽에서 재사용.
+
 ## 구현 결과 (완료)
 - `Sample`에 `physical_stock`/`available_stock` 필드 추가, `JsonSampleRepository`가 두 필드 모두 영속화
 - `ISubMenuController` 도입, `MainController`가 `ISubMenuController* sample_menu = nullptr`(trailing default)로 서브메뉴에 위임하는 구조 확립 — 기존 생성자 호출/테스트는 변경 없이 컴파일됨

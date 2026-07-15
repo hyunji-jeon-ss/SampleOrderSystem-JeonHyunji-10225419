@@ -6,6 +6,7 @@
 #include "view/ISampleView.h"
 
 #include <string>
+#include <vector>
 
 class SampleController : public ISubMenuController
 {
@@ -19,6 +20,7 @@ class SampleController : public ISubMenuController
         void handleRegister();
         void handleList();
         void handleSearch();
+        void displayPaged(const std::vector<Sample>& samples);
 
         ISampleView& view;
         IInputReader& input_reader;
