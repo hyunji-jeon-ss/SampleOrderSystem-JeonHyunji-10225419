@@ -39,3 +39,40 @@ Phase별 상세 설계는 `docs/phase{NN}_design.md`에 기록한다 (예: `docs
 
 ## 빌드/실행
 Visual Studio에서 솔루션을 열어 빌드/실행한다. **빌드가 실패한 상태에서는 절대 커밋하지 않는다** — 반드시 로컬 빌드 성공(및 가능하면 테스트 통과)을 확인한 뒤 커밋한다. 자세한 내용은 상위 `Semiconductor` 폴더의 `CLAUDE.md` 참고.
+
+## Harness — 커맨드라인 빌드/테스트 명령어
+Visual Studio GUI 없이(예: Claude Code 세션에서) 커밋 전 빌드/테스트를 검증할 때 사용하는 명령어. Git Bash 기준.
+
+**1. MSBuild 경로 찾기** (VS 버전에 따라 경로가 달라질 수 있어, 하드코딩 대신 `vswhere`로 찾는 것을 권장)
+```bash
+VSWHERE="/c/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"
+MSBUILD=$("$VSWHERE" -latest -requireAny \
+  -requires Microsoft.Component.MSBuild \
+  -find "MSBuild\**\Bin\MSBuild.exe" | head -1)
+```
+(참고: 이 저장소 검증 시점에는 `C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\amd64\MSBuild.exe` 였음)
+
+**2. NuGet 패키지 복원** (packages.config 방식이라 `msbuild -t:restore`가 아닌 `nuget.exe restore`가 필요)
+```bash
+# 최초 1회: nuget.exe 다운로드 (별도 스크래치 폴더에 받아두고 재사용)
+curl -sL -o nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+
+# 저장소 루트(SampleOrderSystem.sln 위치)에서 실행
+./nuget.exe restore SampleOrderSystem.sln -NonInteractive
+```
+
+**3. 빌드**
+```bash
+export MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL="*"   # git bash의 "/p:" 경로 치환 방지
+"$MSBUILD" SampleOrderSystem.sln "/p:Configuration=Debug" "/p:Platform=x64" "/m"
+```
+
+**4. 테스트 실행**
+```bash
+./x64/Debug/SampleOrderSystemTest.exe
+```
+
+**5. (선택) 콘솔 앱 스모크 테스트** — 표준입력을 파이프로 흘려 대화형 메뉴를 무인 실행
+```bash
+printf '1\n9\n0\n' | ./x64/Debug/SampleOrderSystemApp.exe
+```
