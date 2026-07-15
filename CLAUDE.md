@@ -29,7 +29,8 @@ Phase별 상세 설계는 `docs/design/phase{NN}_design.md`에 기록한다 (예
 - **Phase 9 완료**: 생산라인 기능(`ProductionQueueProcessor`, `ProductionController`) — `PRODUCING` 주문을 단일 FIFO 라인에서 폴링 기반으로 실시간 처리, 완료 시 `physical_stock` 반영, 재기동 시 밀린 완료 건을 백데이팅 체인으로 순서대로 복원. 생산라인 조회 화면은 진행률 바 포함, 새로고침 가능한 반복 조회(이 메뉴만 화면 클리어). `MainController`에 다섯 번째 서브메뉴(`production_menu`)와 `ProductionQueueProcessor*`(매 루프 `advanceQueue()` 호출) 연결. 설계 문서: `docs/design/phase09_design.md`
 - **Phase 10 완료**: 출고 처리 기능(`ReleaseController`) — `CONFIRMED` 목록 조회 → 출고 확인(Y/N) → `RELEASED` 전환 + `physical_stock -= order.quantity`(수율 보정 여분은 재고로 남김). `available_stock`은 건드리지 않음(이미 승인 시점에 반영 완료). `MainController`에 여섯 번째 서브메뉴(`release_menu`) 연결. 설계 문서: `docs/design/phase10_design.md`
 - **Phase 11 완료**: 모니터링 기능(`MonitoringController`) — `[1]` 주문 현황(상태별 건수, REJECTED 제외) / `[2]` 재고 현황(여유/부족/고갈, 미출고 수요 합계 기준 판정) 분리형 메뉴. Phase 9 생산라인 조회와 달리 화면 클리어 없이 선택할 때마다 결과가 아래로 이어붙는 방식. `MainController`에 일곱 번째(마지막) 서브메뉴(`monitoring_menu`) 연결 — 메인 메뉴 1~6번이 모두 연결 완료. 설계 문서: `docs/design/phase11_design.md`
-- **Phase 12 진행 중**: 통합 테스트/마무리 — 체크리스트: `docs/design/phase12_design.md` (Clean Code+SOLID 리뷰 완료, gmock 커버리지 점검 완료, E2E 시나리오 검증 완료, 문서 폴더 정리 진행 중)
+- **Phase 12 완료**: 통합 테스트/마무리 — 체크리스트 8개 항목 전부 완료(Clean Code+SOLID 리뷰, gmock 커버리지 점검, E2E 시나리오 검증, 문서 폴더 정리, 문서 최종화+Harness 버그 수정, JSON 예시 데이터 커밋, 커밋 이력 정리, 5개 저장소 상태 점검). 버그/요구사항 불일치 없음, 5개 저장소 모두 최신 상태로 Public push 완료. 상세: `docs/design/phase12_design.md`
+- **전체 프로젝트 완료**: Phase 0~12 전체 완료.
 
 ## 개발 순서
 `docs/PLAN.md`의 Phase 5부터 Phase 12까지 순서대로 진행한다. 각 Phase 완료 시 해당 Phase의 "완료 기준" 항목을 충족했는지 확인한다.

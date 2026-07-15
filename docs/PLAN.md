@@ -240,7 +240,7 @@
 
 **완료 기준**: 5개 저장소 모두 최신 상태로 push 완료, 전체 시나리오 수동 실행 검증 완료
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase12_design.md` — 진행 중 (Clean Code+SOLID 리뷰/gmock 커버리지 점검/E2E 시나리오 검증 완료, 문서 폴더 정리 진행 중)
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase12_design.md` — ✅ 완료 (8개 점검 항목 전부 완료: Clean Code+SOLID 리뷰, gmock 커버리지 점검, E2E 시나리오 검증, 문서 폴더 정리, 문서 최종화+Harness 점검, JSON 예시 데이터 커밋, 커밋 이력 정리, 5개 저장소 상태 점검)
 
 ---
 

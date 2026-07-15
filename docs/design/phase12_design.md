@@ -188,3 +188,15 @@
 - 전체 커밋 로그(`a08534f`~현재, 약 40개)를 `<HEADER>` 형식 기준으로 검사한 결과, **가장 이른 3개 커밋만 컨벤션을 안 지켰다**: `a08534f chore: initial commit`, `f1100fd docs: PRD/PLAN 최신화...`, `2925a9f docs: 한글 UTF-8...` — 모두 소문자 `type:` 형식(Conventional Commits 스타일)이다. 원인은 명확하다: `COMMIT_CONVENTION.md`를 실제로 도입/반영한 커밋이 그 다음인 `5e7084a <DOCS> 커밋 컨벤션 문서 반영...`이기 때문 — **컨벤션이 확정되기 전에 이미 만들어진 커밋들**이라 예외로 남긴다. 이후 커밋은 전부(`<FEATURE>`/`<FIX>`/`<DOCS>`/`<REFACTOR>`/`<TEST>`/`<CHORE>`) 형식을 정확히 지켰다.
 - **처리 방침**: 위 3개 커밋을 rebase/reword로 고치는 것은 히스토리 재작성 금지 원칙에 위배되므로 **그대로 둔다** — "컨벤션 도입 이전의 커밋"이라는 사실 자체가 프로젝트가 실제로 어떻게 발전했는지 보여주는 정확한 기록이기도 하다.
 - **빌드 실패 상태 커밋 여부**: 이번 세션 전체에서 "구현 → 실제 MSBuild 빌드(0 오류) → gmock 테스트 통과 → 커밋" 순서를 예외 없이 지켰음을 대화 흐름상 확인했고(각 Phase 커밋 직전 실제 빌드/테스트 로그가 이 세션에 전부 남아 있음), 현재 `HEAD`(`5e0479e` 이후 계속) 기준으로도 방금 다시 빌드 0 오류·테스트 81개 통과를 확인했다. 과거 전체 커밋을 하나하나 체크아웃해 재빌드하는 것은(약 40개 커밋 × 빌드 시간) 비용 대비 실익이 낮다고 판단해 생략하고, "매 커밋 전 실제 빌드 확인"이라는 프로젝트 규칙이 세션 내내 지켜졌다는 사실로 갈음한다.
+
+### 8) 저장소 상태 점검 (5개 저장소 모두) — 완료
+`ConsoleMVC`/`DataPersistence`/`DataMonitor`/`DummyDataGenerator`/`SampleOrderSystem` 5개 저장소 전부에 대해 `git status --short --branch`, `git ls-remote`, `gh repo view`, `README.md`/`.gitignore` 내용을 직접 확인했다.
+
+- **Public 여부**: `gh repo view --json visibility`로 5개 전부 `"PUBLIC"` 확인.
+- **push 동기화**: 5개 전부 `git status`에서 로컬 `master`가 `origin/master`와 정확히 일치(ahead/behind 없음). `SampleOrderSystem`은 `git rev-parse HEAD`와 `git ls-remote origin master`의 커밋 해시가 정확히 동일함을 직접 대조해 재확인(`8cec0d4...`).
+- **README.md**: 4개 PoC 저장소 모두 목적/기술 스택/구조/빌드 방법을 정확하고 일관된 형식으로 설명하고 있음을 확인 — 서로 다른 PoC지만 문서 구조(목적→기술 스택→구조→빌드 방법→실행 방법)가 통일되어 있어 채점자가 훑어보기 쉬움. `SampleOrderSystem`은 이미 Phase 11까지 반영된 최신 상태(4번/5번 항목에서 확인 완료).
+- **`.gitignore`**: 4개 PoC 저장소는 전부 동일한 템플릿(VS/MSBuild 산출물, NuGet, CMake, OS 파일 제외)을 공유하고 있고 문제 없음. `SampleOrderSystem`은 6번 항목에서 예시 JSON 데이터를 커밋하기 위해 네거티브 패턴을 추가한 상태(다른 4개 PoC는 커밋된 런타임 데이터가 없으므로 이 예외가 필요 없음 — 그대로 둔다).
+- 결론: 5개 저장소 모두 문제 없이 최신 상태로 Public push 완료. 추가 조치 불필요.
+
+## Phase 12 종합 결론
+8개 점검 항목 전부 완료. 코드 변경은 최소한(FIFO 중복 제거 리팩터링, yield 경계값 테스트 1건, Harness 문서 버그 수정 2건)이었고 나머지는 검증/정리 작업이었다. 발견된 이슈는 전부 해당 항목에서 즉시 고치거나(수정 가능한 것) 근거를 남기고 의도적으로 남겨뒀다(트레이드오프/스코프 밖인 것). 버그나 요구사항 불일치는 발견되지 않았다. `SampleOrderSystem` 및 나머지 4개 PoC 저장소 모두 최신 상태로 push 완료 — 제출 준비 완료.
