@@ -1,0 +1,36 @@
+# Visual Studio / MSBuild
+.vs/
+*.user
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.VC.opendb
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+Win32/
+[Bb]in/
+[Oo]bj/
+ipch/
+*.ilk
+*.pdb
+*.obj
+*.tlog
+*.log
+*.idb
+
+# NuGet
+packages/*
+!packages/build/
+*.nupkg
+
+# CMake (혹시 병행 사용 시)
+build/
+CMakeFiles/
+CMakeCache.txt
+
+# OS
+Thumbs.db
+.DS_Store

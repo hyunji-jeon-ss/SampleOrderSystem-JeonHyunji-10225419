@@ -1,0 +1,24 @@
+# CLAUDE.md — SampleOrderSystem-JeonHyunji-10225419
+
+## 프로젝트 개요
+반도체 시료 생산주문관리 시스템 메인 프로젝트. 상세 요구사항은 `PRD.md`, 구현 순서는 `PLAN.md`를 따른다.
+
+## 기술 스택 / 컨벤션
+- C++20, Visual Studio(MSBuild, .vcxproj), gmock(NuGet)
+- 코드 컨벤션은 `CODE_CONVENTION.md`를 따른다 (PascalCase 클래스, camelCase 메서드, snake_case 변수 등).
+
+## 아키텍처
+- MVC 구조: `model/`, `view/`, `controller/`
+- 영속성 계층: 파일(JSON) 기반, `Sample`/`Order` 데이터를 재실행 후에도 유지
+- 재고는 **내부 판단용 가용 재고(availableStock)**와 **화면 표시용 재고(physicalStock)**로 이원화하여 관리 (`PRD.md` 6.4, 6.5 참고)
+- 생산라인은 현실 시간 기반 타이머로 동작하며, 프로그램 재기동 시 저장된 시작/완료 시각을 기준으로 상태를 복원한다 (`PRD.md` 6.6 참고)
+
+## 개발 순서
+`PLAN.md`의 Phase 5부터 Phase 12까지 순서대로 진행한다. 각 Phase 완료 시 해당 Phase의 "완료 기준" 항목을 충족했는지 확인한다.
+
+## 테스트
+- 모든 기능은 구현 시마다 gmock 기반 단위 테스트를 함께 작성한다.
+- 시간(Clock), 저장소(Repository) 등 외부 의존성은 인터페이스로 분리하여 Mock 처리한다.
+
+## 빌드/실행
+Visual Studio에서 솔루션을 열어 빌드/실행한다.
