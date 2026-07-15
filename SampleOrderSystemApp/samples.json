@@ -1,0 +1,82 @@
+[
+    {
+        "id": "S-001",
+        "name": "실리콘 웨이퍼-8인치",
+        "avg_production_time_min": 0.05,
+        "yield": 0.92,
+        "physical_stock": 480,
+        "available_stock": 380
+    },
+    {
+        "id": "S-002",
+        "name": "GaN 에피택셜-4인치",
+        "avg_production_time_min": 0.05,
+        "yield": 0.78,
+        "physical_stock": 220,
+        "available_stock": 200
+    },
+    {
+        "id": "S-003",
+        "name": "SiC 파워기판-6인치",
+        "avg_production_time_min": 0.05,
+        "yield": 0.92,
+        "physical_stock": 30,
+        "available_stock": 0
+    },
+    {
+        "id": "S-004",
+        "name": "포토레지스트-PR7",
+        "avg_production_time_min": 0.05,
+        "yield": 0.95,
+        "physical_stock": 910,
+        "available_stock": 910
+    },
+    {
+        "id": "S-005",
+        "name": "산화막 웨이퍼-SiO2",
+        "avg_production_time_min": 0.05,
+        "yield": 0.88,
+        "physical_stock": 0,
+        "available_stock": 0
+    },
+    {
+        "id": "S-006",
+        "name": "사파이어 기판-2인치",
+        "avg_production_time_min": 0.05,
+        "yield": 0.85,
+        "physical_stock": 60,
+        "available_stock": 60
+    },
+    {
+        "id": "S-007",
+        "name": "질화갈륨 트랜지스터-HEMT",
+        "avg_production_time_min": 0.05,
+        "yield": 0.81,
+        "physical_stock": 150,
+        "available_stock": 150
+    },
+    {
+        "id": "S-008",
+        "name": "실리콘 카바이드 다이오드",
+        "avg_production_time_min": 0.05,
+        "yield": 0.9,
+        "physical_stock": 45,
+        "available_stock": 45
+    },
+    {
+        "id": "S-009",
+        "name": "게르마늄 기판-4인치",
+        "avg_production_time_min": 0.05,
+        "yield": 0.7,
+        "physical_stock": 12,
+        "available_stock": 12
+    },
+    {
+        "id": "S-010",
+        "name": "인듐인 웨이퍼-InP",
+        "avg_production_time_min": 0.05,
+        "yield": 0.83,
+        "physical_stock": 200,
+        "available_stock": 200
+    }
+]

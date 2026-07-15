@@ -36,6 +36,11 @@ Thumbs.db
 .DS_Store
 
 # 런타임 데이터 (JSON 영속성 파일)
+# SampleOrderSystemApp/samples.json, orders.json은 예시 데이터로 커밋되어 추적 대상이다.
+# (앱을 실행하면 값이 바뀌는 게 정상 — 커밋 시점의 예시 스냅샷이라는 의미)
+# 그 외 위치(x64/Debug 등 빌드 산출물, 로컬 스모크 테스트용 임시 복사본)의 동일 이름 파일만 무시한다.
 samples.json
 orders.json
+!/SampleOrderSystemApp/samples.json
+!/SampleOrderSystemApp/orders.json
 test_*.json

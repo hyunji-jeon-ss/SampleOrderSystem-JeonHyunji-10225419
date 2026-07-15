@@ -174,3 +174,12 @@
   1. **`vswhere` 명령 옵션 오타**: 문서에 `-requireAny`로 적혀 있었는데 실제 vswhere 옵션명은 **`-requiresAny`**(s 포함)다. 오타 옵션을 주면 vswhere가 "Unknown parameter" 오류를 표준출력에 내고 종료해서, `$MSBUILD` 변수에 MSBuild 경로 대신 **오류/버전 배너 문자열이 그대로 담기는** 문제가 있었다 — 이후 빌드 명령이 전부 깨지는 원인. `-nologo`도 없어서 정상 실행 시에도 로고 텍스트가 섞여 들어갈 수 있었다.
   2. **스모크 테스트 커맨드의 입력 라인 부족**: `printf '1\n9\n0\n'`은 하위 메뉴(시료 관리)에서 빠져나오는 `0`까지만 주고 메인 메뉴를 종료하는 `0`을 안 줘서, 표준입력이 EOF에 도달한 뒤 메인 루프가 종료되지 않고 빈 입력을 계속 읽으며 스핀하는 문제가 있었다(실제로 재현: 30초 타임아웃까지 종료 안 됨). `printf '1\n9\n0\n0\n'`로 고쳐서 실제 프로세스가 정상 종료(exit 0)함을 확인.
   - 두 수정 모두 `CLAUDE.md` Harness 섹션에 반영했고, **1→2→3→4→5 전 단계를 문서에 적힌 그대로 처음부터 다시 실행**해 정상 동작을 재확인했다(경로 탐색 → 빌드 0 오류 → 테스트 81개 통과 → 스모크 테스트 정상 종료).
+
+### 6) JSON 예시 데이터 커밋 — 완료
+- **`SampleOrderSystemApp/samples.json`**: 시료 10종(S-001~S-010) 유지. 재고 다양성을 위해 일부는 `available_stock == physical_stock`(충분), 일부는 `available_stock == 0`(고갈/부족 유도)로 섞어뒀다 — E2E 점검(3번)에서 확인한 "새로 등록한 시료는 available_stock이 0에서 절대 회복되지 않는다"는 특성 때문에, 앱을 받은 사람이 승인 화면에서 "재고 충분" 분기를 곧바로 볼 수 있으려면 이렇게 미리 재고를 보유한 시료가 최소 하나는 있어야 한다.
+- **`SampleOrderSystemApp/orders.json`**: `OrderStatus` 5개 상태(`RESERVED`/`REJECTED`/`CONFIRMED`/`PRODUCING`/`RELEASED`)에 각 3건씩 총 15건을 새로 작성했다.
+  - `PRODUCING` 3건은 `production_start_millis`를 일부러 `0`(미시작)으로 남겨뒀다 — 그래야 앱을 처음 실행하는 시점의 실제 현재 시각을 기준으로 생산이 자연스럽게 시작되어, 커밋된 지 오래된 예시 데이터라도 항상 "방금 생산 시작"인 것처럼 동작한다(고정된 과거 타임스탬프를 넣으면 채점 시점에 따라 이미 오래전에 끝났어야 하는 어색한 상태가 될 수 있어서 피함).
+  - `CONFIRMED` 중 1건(`ORD-20260710-0009`)만 생산을 거쳐 완료된 상태로 만들어 `real_production_quantity`/`production_start_millis`/`production_end_millis` 필드가 실제로 채워진 예시를 보여준다(과거에 이미 끝난 타임스탬프라 재실행해도 상태가 안 바뀜, 정합성 문제 없음).
+- **`.gitignore` 갱신**: `samples.json`/`orders.json`을 여전히 기본적으로 무시하되, `!/SampleOrderSystemApp/samples.json`/`!/SampleOrderSystemApp/orders.json` 네거티브 패턴으로 이 두 파일만 예외로 추적한다. `x64/Debug/` 아래 생기는 실행용 사본이나 임시 스모크 테스트 복사본은 계속 무시됨.
+- **검증**: 새 시드로 스모크 테스트 — 모니터링(`[4]`)에서 상태별 건수가 정확히 3/3/3/3(RESERVED/CONFIRMED/PRODUCING/RELEASED, REJECTED 제외)으로 집계됨을 확인, 재고 현황에서 `S-003`이 "부족"(재고 30 < 대기 수요 55), `S-005`가 "고갈"(재고 0)로 정확히 표시됨을 확인, 생산라인 조회에서 `PRODUCING` 3건이 FIFO 순서대로 활성/대기로 정확히 나뉘어 보임을 확인, 승인(`[3]`)/출고(`[6]`) 목록에도 각각 `RESERVED`/`CONFIRMED` 3건이 정확히 표시됨을 확인. gmock 테스트는 이 파일들을 사용하지 않으므로 81개 그대로 통과.
+- **커밋 시 주의사항 문서화**: 이 두 파일은 앱을 한 번이라도 실행하면 값이 실제로 바뀐다(주문 진행 등) — "커밋 시점의 예시 스냅샷"이라는 점을 `.gitignore` 주석에 남겨, 실행 후 `git status`에 변경이 뜨는 게 정상임을 알 수 있게 했다.
