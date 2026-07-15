@@ -15,7 +15,7 @@ ProductionQueueProcessor::ProductionQueueProcessor(
 {
 }
 
-std::vector<Order> ProductionQueueProcessor::fetchProducingOrdersByFifo()
+std::vector<Order> fetchProducingOrdersByFifo(IOrderRepository& order_repository)
 {
     std::vector<Order> producing;
     for (const Order& order : order_repository.findAll())
@@ -35,7 +35,7 @@ void ProductionQueueProcessor::advanceQueue()
 
     while (true)
     {
-        const std::vector<Order> producing = fetchProducingOrdersByFifo();
+        const std::vector<Order> producing = fetchProducingOrdersByFifo(order_repository);
         if (producing.empty()) return;
 
         Order active = producing.front();

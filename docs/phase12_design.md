@@ -116,3 +116,15 @@
 
 ## 참고
 - 이 문서는 "초안" 상태로 작성되었다 — 실제 점검을 시작하기 전에 위 체크리스트 항목/우선순위에 대해 사용자 확인을 받는다.
+- **실행 순서**: 1) Clean Code 리뷰(+SOLID) → 2) gmock 커버리지 점검 → 3) E2E 시나리오 수동 검증 → 4) 문서 폴더 정리 → 5) 문서 최종화(+Harness 점검) → 6) JSON 예시 데이터 커밋 → 7) 커밋 이력 정리 → 8) 저장소 상태 점검. (이 문서 안의 번호와 실제 실행 순서는 다르다 — 문서는 주제별 분류, 아래 기록은 실행 순서를 따른다.)
+
+## 점검 결과 기록
+
+### 1) Clean Code 리뷰(+SOLID) — 완료
+**SOLID**: SRP/LSP/ISP/DIP 모두 양호. OCP는 Phase마다 `MainController` 생성자에 trailing default 파라미터가 늘어나는 형태라 엄밀히는 위반이지만, 기존 호출부를 전혀 건드리지 않는 방식이라 **의도된 트레이드오프로 남긴다** (완전한 OCP를 위한 메뉴 레지스트리 구조로 바꾸는 건 이 시점에 리스크 대비 이득이 낮다고 판단).
+
+**중복 코드 2건 발견**:
+- `fetchProducingOrdersByFifo()`가 `production/ProductionQueueProcessor.cpp`(구 private 멤버)와 `controller/ProductionController.cpp`(익명 네임스페이스 함수)에 완전히 동일한 로직으로 중복되어 있었다. → **수정함**: `ProductionQueueProcessor.h`에 공용 자유 함수 `fetchProducingOrdersByFifo(IOrderRepository&)`로 노출하고, `ProductionQueueProcessor::advanceQueue()`와 `ProductionController::display()` 양쪽 모두 이 함수를 호출하도록 정리(중복 정의 제거). gmock 테스트 80개 재실행 통과 확인, `<REFACTOR>` 커밋으로 반영 예정.
+- `ApprovalController`/`ReleaseController`의 "목록 조회 → 번호 선택 → Y/N 확인 → 처리" 스캐폴딩(`run()`/`processCommand()`의 번호 파싱+범위 체크, `buildXxxRows()`의 상태 필터+시료명 조회 패턴)이 구조적으로 유사함. → **수정하지 않기로 결정**: 실제 도메인 로직(재고 이중 관리 분기 vs 단순 출고)이 서로 달라서 억지로 공통 베이스/헬퍼로 뽑으면 오히려 각 컨트롤러의 의도가 흐려질 위험이 있다고 판단, 학교 프로젝트 규모상 지금 상태를 **의도된 트레이드오프로 유지**한다.
+
+메모리 관리(`new`/`delete` 없음), 죽은 코드, `CODE_CONVENTION.md` 준수는 전부 문제 없이 확인됨.

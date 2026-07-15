@@ -9,23 +9,6 @@
 #include <algorithm>
 #include <optional>
 
-namespace
-{
-    std::vector<Order> fetchProducingOrdersByFifo(IOrderRepository& order_repository)
-    {
-        std::vector<Order> producing;
-        for (const Order& order : order_repository.findAll())
-        {
-            if (order.status == OrderStatus::PRODUCING) producing.push_back(order);
-        }
-
-        std::sort(producing.begin(), producing.end(),
-            [](const Order& a, const Order& b) { return a.enqueued_at_millis < b.enqueued_at_millis; });
-
-        return producing;
-    }
-}
-
 ProductionController::ProductionController(IProductionView& view, IInputReader& input_reader,
     ISampleRepository& sample_repository, IOrderRepository& order_repository,
     ProductionQueueProcessor& queue_processor, IClock& clock)
