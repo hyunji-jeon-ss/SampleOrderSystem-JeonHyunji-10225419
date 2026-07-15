@@ -84,6 +84,12 @@ class SampleController : public ISubMenuController
 - **화면 클리어**: 사용자가 메뉴에서 선택할 때마다 화면을 지우고 결과를 보여주도록 변경. `console/ConsoleUtil.h/.cpp`에 Win32 콘솔 API(`FillConsoleOutputCharacter` 등) 기반 `clearConsoleScreen()`을 구현하고, `MainController`/`SampleController`의 `run()` 루프(메뉴 표시 전, 입력 직후, 페이지네이션 전환 시)에 적용. 콘솔이 아닌 환경(파이프/리다이렉션, 테스트)에서는 `GetConsoleScreenBufferInfo` 실패 시 안전하게 no-op.
 - **시료 목록/검색 테이블 정렬 고정**: 값 길이가 들쭉날쭉해 정렬이 어긋나던 문제를 고정폭 컬럼으로 해결. `ConsoleUtil`에 UTF-8 표시 너비를 고려한 `padEnd`(왼쪽 정렬)/`padStart`(오른쪽 정렬) 공용 함수를 추가해 한글(3바이트, 표시폭 2칸)과 ASCII를 함께 정렬한다. ID/이름은 왼쪽 정렬, 생산시간/수율/재고는 오른쪽 정렬.
 
+## 변경 이력 (3) — 화면 클리어 범위 조정
+사용자 피드백: 시료 관리 서브메뉴(등록/조회/검색)에서 클리어가 너무 자주 발생해, 등록 완료 메시지나 페이지네이션 2페이지 내용이 사용자가 읽기도 전에 곧바로 다음 화면으로 덮어써지는 문제가 있었다 (예: "N"을 눌러도 다음 페이지로 안 넘어가는 것처럼 보임 — 실제로는 넘어갔지만 화면이 바로 지워짐).
+
+- `SampleController::run()`과 `displayPaged()`에서 `clearConsoleScreen()` 호출을 전부 제거했다. 시료 관리 서브메뉴 안에서는 이제 클리어 없이 이전 내용 위에 계속 이어서 출력된다 — 등록 완료 메시지, 조회/검색 결과, 페이지 전환 내용이 전부 화면에 남아 사용자가 확인할 수 있다.
+- `MainController`의 메인 메뉴 클리어 동작은 그대로 유지한다 (이번 피드백 대상이 아님).
+
 ## 구현 결과 (완료)
 - `Sample`에 `physical_stock`/`available_stock` 필드 추가, `JsonSampleRepository`가 두 필드 모두 영속화
 - `ISubMenuController` 도입, `MainController`가 `ISubMenuController* sample_menu = nullptr`(trailing default)로 서브메뉴에 위임하는 구조 확립 — 기존 생성자 호출/테스트는 변경 없이 컴파일됨
