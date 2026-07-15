@@ -28,7 +28,7 @@ Phase별 상세 설계는 `docs/phase{NN}_design.md`에 기록한다 (예: `docs
 - **리팩터링(Phase 8 이후)**: 코드 리뷰에서 발견된 중복/버그 정리 — `JsonSampleRepository`/`JsonOrderRepository`의 파일 I/O 중복을 `repository/JsonFileStore.h/.cpp`(`readJsonArray`/`writeJsonArray`)로 공용화, `ConsoleSampleView`의 메뉴 헤더 `[1]` 중복 출력 버그 수정, `MainController`의 서브메뉴 위임 분기를 `runSubMenuOrShowPlaceholder()` 헬퍼로 정리.
 - **Phase 9 완료**: 생산라인 기능(`ProductionQueueProcessor`, `ProductionController`) — `PRODUCING` 주문을 단일 FIFO 라인에서 폴링 기반으로 실시간 처리, 완료 시 `physical_stock` 반영, 재기동 시 밀린 완료 건을 백데이팅 체인으로 순서대로 복원. 생산라인 조회 화면은 진행률 바 포함, 새로고침 가능한 반복 조회(이 메뉴만 화면 클리어). `MainController`에 다섯 번째 서브메뉴(`production_menu`)와 `ProductionQueueProcessor*`(매 루프 `advanceQueue()` 호출) 연결. 설계 문서: `docs/phase09_design.md`
 - **Phase 10 완료**: 출고 처리 기능(`ReleaseController`) — `CONFIRMED` 목록 조회 → 출고 확인(Y/N) → `RELEASED` 전환 + `physical_stock -= order.quantity`(수율 보정 여분은 재고로 남김). `available_stock`은 건드리지 않음(이미 승인 시점에 반영 완료). `MainController`에 여섯 번째 서브메뉴(`release_menu`) 연결. 설계 문서: `docs/phase10_design.md`
-- 다음: Phase 11(모니터링) — 상태별 주문 건수 집계, 시료별 재고 현황(화면 표시 재고 기준) 통합 뷰.
+- 다음: Phase 11(모니터링) — 상태별 주문 건수 집계, 시료별 재고 현황(화면 표시 재고 기준) 통합 뷰. 설계 문서 작성 완료: `docs/phase11_design.md` (구현 대기)
 
 ## 개발 순서
 `PLAN.md`의 Phase 5부터 Phase 12까지 순서대로 진행한다. 각 Phase 완료 시 해당 Phase의 "완료 기준" 항목을 충족했는지 확인한다.
