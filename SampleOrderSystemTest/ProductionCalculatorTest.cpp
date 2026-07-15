@@ -24,6 +24,12 @@ TEST(ProductionCalculatorTest, NegativeShortageProducesZero)
     EXPECT_EQ(computeRealProductionQuantity(-10, 0.9), 0);
 }
 
+TEST(ProductionCalculatorTest, ZeroOrNegativeYieldFallsBackToShortageQuantity)
+{
+    EXPECT_EQ(computeRealProductionQuantity(50, 0.0), 50);
+    EXPECT_EQ(computeRealProductionQuantity(50, -0.5), 50);
+}
+
 TEST(ProductionCalculatorTest, TotalProductionTimeMultipliesQuantityByAverageTime)
 {
     EXPECT_DOUBLE_EQ(computeTotalProductionTimeMin(185, 0.8), 148.0);

@@ -35,13 +35,13 @@
 | SampleControllerTest | 8 | 시료 등록/조회/검색 |
 | OrderControllerTest | 6 | 주문 접수 |
 | ApprovalControllerTest | 6 | 승인/거절, 재고 이중 관리 |
-| ProductionCalculatorTest | 5 | 실생산량/소요시간 계산 |
+| ProductionCalculatorTest | 6 | 실생산량/소요시간 계산 |
 | ProductionQueueProcessorTest | 4 | FIFO 큐 폴링/백데이팅 |
 | ProductionControllerTest | 5 | 생산라인 조회 화면 |
 | ReleaseControllerTest | 6 | 출고 처리 |
 | MonitoringControllerTest | 9 | 모니터링 |
 | MainControllerTest | 16 | 메인 메뉴 위임/요약 |
-| **합계** | **80** | |
+| **합계** | **81** | |
 
 점검할 것:
 - 각 Phase 설계 문서의 "테스트 계획" 항목과 실제 테스트가 1:1로 대응하는지 재확인 (빠진 케이스가 있으면 이번 Phase에서 보완)
@@ -128,3 +128,15 @@
 - `ApprovalController`/`ReleaseController`의 "목록 조회 → 번호 선택 → Y/N 확인 → 처리" 스캐폴딩(`run()`/`processCommand()`의 번호 파싱+범위 체크, `buildXxxRows()`의 상태 필터+시료명 조회 패턴)이 구조적으로 유사함. → **수정하지 않기로 결정**: 실제 도메인 로직(재고 이중 관리 분기 vs 단순 출고)이 서로 달라서 억지로 공통 베이스/헬퍼로 뽑으면 오히려 각 컨트롤러의 의도가 흐려질 위험이 있다고 판단, 학교 프로젝트 규모상 지금 상태를 **의도된 트레이드오프로 유지**한다.
 
 메모리 관리(`new`/`delete` 없음), 죽은 코드, `CODE_CONVENTION.md` 준수는 전부 문제 없이 확인됨.
+
+### 2) gmock 테스트 커버리지 점검 — 완료
+각 Phase 설계 문서의 "테스트 계획" 항목과 실제 테스트를 1:1로 대조한 결과 빠진 케이스는 없었다(모두 대응하는 `TEST(...)`가 존재). 체크리스트에 적어둔 경계값 후보들을 검토한 결과:
+
+- **`production/ProductionCalculator.cpp`의 `yield <= 0.0` 분기(부족분을 그대로 반환하는 안전장치)가 테스트 커버리지 0이었다.** → 실제 코드에 존재하는 분기인데 검증이 전혀 없던 진짜 빈틈이라 판단해 **`ProductionCalculatorTest.ZeroOrNegativeYieldFallsBackToShortageQuantity`를 추가**(`yield==0`, `yield<0` 둘 다 검증). `<TEST>` 커밋으로 반영.
+- **수량 음수 입력(`OrderController`/`ApprovalController`/`ReleaseController`의 `quantity`/번호 파싱)**: 이미 있는 `ZeroQuantityIsRejected`/`InvalidIndexShowsErrorAndDoesNotChangeAnything` 등과 완전히 같은 코드 분기(`quantity < 1`, `index < 1`)를 타므로, 별도 테스트를 추가하지 않고 **"동일 동치 클래스로 이미 커버됨"**으로 기록만 한다.
+- **`avg_production_time_min`/`yield` 극단값(등록 화면 입력)**: `SampleController::handleRegister()`는 PRD 예시 프롬프트("수율(0~1)")와 무관하게 범위 검증을 하지 않는다 — 숫자 파싱만 되면 그대로 저장된다. 이건 버그라기보다 **PRD가 범위 검증을 요구하지 않는 항목**이라 스코프 밖으로 판단, 새 테스트/검증 로직을 추가하지 않고 "확인함, 의도적으로 미구현"으로 기록.
+- **동일 시료에 대기 주문 다수(3건 이상)일 때 FIFO 순서 안정성**: `ProductionQueueProcessorTest.BackdatedChainCompletesMultipleOrdersInOneCall`가 2건 체인은 검증하지만 3건 이상은 없다. 다만 정렬 기준(`enqueued_at_millis` 오름차순)과 체인 로직 자체는 건수에 의존하지 않는 일반 로직이라 2건 검증으로 3건 이상도 같은 방식으로 동작함을 충분히 신뢰할 수 있다고 판단 — **추가 테스트 없이 "확인함"으로 기록**.
+- **JSON 파일이 비어있는 경우**: `JsonSampleRepositoryTest.FindAllReturnsEmptyWhenFileDoesNotExist` 등으로 이미 커버됨.
+- **JSON 파일이 손상된(문법 오류) 경우**: `repository/JsonFileStore.cpp`의 `readJsonArray()`는 파싱 실패 시 예외를 그대로 던지며 어디서도 catch하지 않는다 — 즉 손상된 파일이 있으면 앱이 즉시 종료(크래시)된다. 이 파일은 앱 자신이 전적으로 관리하는 영속 파일이고(사용자가 직접 수정하는 파일이 아님) PRD에도 손상 복구 요구사항이 없어 **스코프 밖의 의도적 미방어로 기록**하고 새 테스트/방어 코드를 추가하지 않는다.
+
+결과: gmock 테스트 80개 → **81개**로 증가(신규 1개), 나머지 경계값 후보는 전부 "이미 커버됨" 또는 "스코프 밖"으로 근거를 기록하고 마무리.
