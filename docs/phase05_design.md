@@ -64,6 +64,10 @@ struct Order
 - gmock 기반 단위 테스트 16개: `JsonSampleRepositoryTest`(7), `JsonOrderRepositoryTest`(6, `MockClock`으로 날짜 고정), `MainControllerTest`(3, View/InputReader/Repository 전부 Mock).
 - 로컬 MSBuild로 실제 빌드 성공(오류 0개) 및 테스트 전체 통과, 콘솔 실행으로 메뉴 표시/종료 흐름까지 확인 완료.
 
+## 추가 반영 (Phase 5 완료 후)
+- **메인 메뉴에 현재 시스템 시각 표시** (PDF 예시 UI의 "시스템 현황 2026-04-16 09:32:15" 참고): `MainMenuSummary`에 `current_time_text` 필드를 추가하고, `MainController`가 `IClock`을 주입받아 `buildSummary()`에서 채운다.
+- 날짜/시간 포맷팅 로직(`formatDate`, `formatDateTime`)을 `clock/TimeFormat.h/.cpp`로 공용화하여 `JsonOrderRepository`(주문번호 채번)와 `MainController`(메뉴 시각 표시) 양쪽에서 재사용한다.
+
 ## 다음 Phase로 이월되는 항목
 - 재고 이중 관리(`availableStock`/`physicalStock`) 구현 — Phase 6(시료 관리), Phase 8(주문 승인/거절)
 - 생산라인 실시간 타이머 및 재기동 복원 — Phase 9
