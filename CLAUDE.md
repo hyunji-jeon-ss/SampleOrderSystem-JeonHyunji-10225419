@@ -21,5 +21,10 @@
 - 모든 기능은 구현 시마다 gmock 기반 단위 테스트를 함께 작성한다.
 - 시간(Clock), 저장소(Repository) 등 외부 의존성은 인터페이스로 분리하여 Mock 처리한다.
 
+## 한글 인코딩 (중요)
+콘솔에 한글을 출력하므로 반드시 아래 두 가지를 유지한다. 자세한 이유는 상위 `Semiconductor` 폴더의 `CLAUDE.md` 참고.
+1. 모든 `.vcxproj`의 각 ClCompile 설정에 `<AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>` 적용
+2. 콘솔 진입점(main)에서 `SetConsoleOutputCP(CP_UTF8)` / `SetConsoleCP(CP_UTF8)` 호출
+
 ## 빌드/실행
 Visual Studio에서 솔루션을 열어 빌드/실행한다.
