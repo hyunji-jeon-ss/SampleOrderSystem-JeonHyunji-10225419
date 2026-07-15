@@ -1,5 +1,6 @@
 #pragma once
 
+#include "clock/IClock.h"
 #include "controller/IInputReader.h"
 #include "repository/IOrderRepository.h"
 #include "repository/ISampleRepository.h"
@@ -11,7 +12,7 @@ class MainController
 {
     public:
         MainController(IMainView& view, IInputReader& input_reader,
-            ISampleRepository& sample_repository, IOrderRepository& order_repository);
+            ISampleRepository& sample_repository, IOrderRepository& order_repository, IClock& clock);
 
         void run();
         bool processCommand(const std::string& command);
@@ -23,4 +24,5 @@ class MainController
         IInputReader& input_reader;
         ISampleRepository& sample_repository;
         IOrderRepository& order_repository;
+        IClock& clock;
 };

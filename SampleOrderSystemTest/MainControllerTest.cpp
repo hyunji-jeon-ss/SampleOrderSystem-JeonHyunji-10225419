@@ -1,3 +1,4 @@
+#include "clock/IClock.h"
 #include "controller/IInputReader.h"
 #include "controller/MainController.h"
 #include "repository/IOrderRepository.h"
@@ -41,13 +42,20 @@ class MockOrderRepository : public IOrderRepository
         MOCK_METHOD(std::vector<Order>, findAll, (), (override));
 };
 
+class MockClock : public IClock
+{
+    public:
+        MOCK_METHOD(int64_t, nowMillis, (), (override));
+};
+
 TEST(MainControllerTest, ExitCommandStopsLoop)
 {
     MockMainView view;
     MockInputReader input_reader;
     MockSampleRepository sample_repository;
     MockOrderRepository order_repository;
-    MainController controller(view, input_reader, sample_repository, order_repository);
+    MockClock clock;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock);
 
     EXPECT_FALSE(controller.processCommand("0"));
 }
@@ -58,7 +66,8 @@ TEST(MainControllerTest, UnimplementedMenuShowsPlaceholderMessage)
     MockInputReader input_reader;
     MockSampleRepository sample_repository;
     MockOrderRepository order_repository;
-    MainController controller(view, input_reader, sample_repository, order_repository);
+    MockClock clock;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock);
 
     EXPECT_CALL(view, showMessage(_)).Times(1);
 
@@ -71,9 +80,33 @@ TEST(MainControllerTest, UnknownCommandShowsErrorMessage)
     MockInputReader input_reader;
     MockSampleRepository sample_repository;
     MockOrderRepository order_repository;
-    MainController controller(view, input_reader, sample_repository, order_repository);
+    MockClock clock;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock);
 
     EXPECT_CALL(view, showMessage(_)).Times(1);
 
     EXPECT_TRUE(controller.processCommand("9"));
+}
+
+TEST(MainControllerTest, RunShowsMenuWithCurrentTimeAndExits)
+{
+    MockMainView view;
+    MockInputReader input_reader;
+    NiceMock<MockSampleRepository> sample_repository;
+    NiceMock<MockOrderRepository> order_repository;
+    NiceMock<MockClock> clock;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock);
+
+    ON_CALL(clock, nowMillis()).WillByDefault(Return(1776300000000LL));
+    ON_CALL(sample_repository, findAll()).WillByDefault(Return(std::vector<Sample>{}));
+    ON_CALL(order_repository, findAll()).WillByDefault(Return(std::vector<Order>{}));
+    EXPECT_CALL(input_reader, readLine()).WillOnce(Return("0"));
+
+    MainMenuSummary captured_summary;
+    EXPECT_CALL(view, showMainMenu(_))
+        .WillOnce(SaveArg<0>(&captured_summary));
+
+    controller.run();
+
+    EXPECT_FALSE(captured_summary.current_time_text.empty());
 }

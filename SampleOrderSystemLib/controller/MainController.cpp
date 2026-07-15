@@ -1,15 +1,17 @@
 #include "controller/MainController.h"
 
+#include "clock/TimeFormat.h"
 #include "model/Order.h"
 #include "model/OrderStatus.h"
 #include "model/Sample.h"
 
 MainController::MainController(IMainView& view, IInputReader& input_reader,
-    ISampleRepository& sample_repository, IOrderRepository& order_repository)
+    ISampleRepository& sample_repository, IOrderRepository& order_repository, IClock& clock)
     : view(view)
     , input_reader(input_reader)
     , sample_repository(sample_repository)
     , order_repository(order_repository)
+    , clock(clock)
 {
 }
 
@@ -42,6 +44,8 @@ bool MainController::processCommand(const std::string& command)
 MainMenuSummary MainController::buildSummary()
 {
     MainMenuSummary summary;
+
+    summary.current_time_text = formatDateTime(clock.nowMillis());
 
     const std::vector<Sample> samples = sample_repository.findAll();
     summary.sample_count = static_cast<int>(samples.size());

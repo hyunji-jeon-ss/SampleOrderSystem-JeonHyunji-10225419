@@ -4,6 +4,7 @@
 
 struct MainMenuSummary
 {
+    std::string current_time_text;
     int sample_count = 0;
     int total_stock = 0;
     int order_count = 0;

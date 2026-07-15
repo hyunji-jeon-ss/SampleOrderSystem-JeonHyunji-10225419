@@ -1,9 +1,10 @@
 #include "repository/JsonOrderRepository.h"
 
+#include "clock/TimeFormat.h"
+
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
-#include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <sstream>
@@ -54,17 +55,6 @@ namespace
             {"quantity", order.quantity},
             {"status", orderStatusToString(order.status)}
         };
-    }
-
-    std::string formatDate(int64_t millis)
-    {
-        const std::time_t seconds = static_cast<std::time_t>(millis / 1000);
-        std::tm local_time{};
-        localtime_s(&local_time, &seconds);
-
-        std::ostringstream oss;
-        oss << std::put_time(&local_time, "%Y%m%d");
-        return oss.str();
     }
 }
 

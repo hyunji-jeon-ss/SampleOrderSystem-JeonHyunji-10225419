@@ -20,7 +20,7 @@ int main()
     ConsoleMainView view;
     ConsoleInputReader input_reader;
 
-    MainController controller(view, input_reader, sample_repository, order_repository);
+    MainController controller(view, input_reader, sample_repository, order_repository, clock);
     controller.run();
 
     return 0;
