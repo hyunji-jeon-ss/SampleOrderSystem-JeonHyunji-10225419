@@ -155,3 +155,12 @@
 **발견한 특기 사항(버그 아님, 설계상 확인해둘 특성)**: `available_stock`은 승인 시점에만 감소하고 그 외에는(생산 완료·출고 어디에서도) 절대 증가하지 않는다. 따라서 새로 등록한 시료(초기 `physical_stock`/`available_stock` 모두 0)에 대해서는 "재고 충분" 분기가 논리적으로 영원히 발생할 수 없고, "재고 충분" 흐름은 오직 시드 데이터처럼 **이미 `available_stock`을 보유한 상태로 시작하는 시료**에서만 나타난다. 이는 PRD 6.4 원문("부족분은 생산 완료 시점에 화면 표시용 재고에만 반영되며, 내부 가용 재고 계산에는 별도로 포함되지 않는다")과 정확히 일치하는 의도된 동작이라 결론짓는다 — 이번 Phase 12의 6번 항목(JSON 예시 데이터 커밋)에서 시료 일부를 처음부터 재고 보유 상태로 시드하는 이유이기도 하다.
 
 결과: 7개 시나리오 전부 기대대로 동작, 버그 발견 없음. 코드 수정 없이 검증만으로 완료.
+
+### 4) 문서 폴더 정리 — 완료
+계획대로 정리했다:
+- **루트에 유지**: `README.md`(GitHub 자동 표시), `CLAUDE.md`(Claude Code 자동 로드)
+- **`docs/`로 이동** (`git mv`로 히스토리 보존): `PRD.md` → `docs/PRD.md`, `PLAN.md` → `docs/PLAN.md`, `CODE_CONVENTION.md` → `docs/CODE_CONVENTION.md`, `COMMIT_CONVENTION.md` → `docs/COMMIT_CONVENTION.md`
+- **`docs/design/`로 이동**: 기존 `docs/phase05_design.md` ~ `docs/phase12_design.md`(이 문서 포함) 전부
+- **링크 갱신**: `CLAUDE.md`(프로젝트 개요/설계 문서/진행 상황/개발 순서/커밋 컨벤션 절), `README.md`(재고 이원화 설명/문서 절), 저장소 내 `docs/PLAN.md`와 루트 `Semiconductor/PLAN.md` 사본 양쪽의 `docs/phase{NN}_design.md` → `docs/design/phase{NN}_design.md` 참조 전부 갱신, Phase 12 자체의 "설계 문서" 포인터 라인도 두 `PLAN.md`에 추가.
+- **검증**: 이동 후 `SampleOrderSystem.sln` 재빌드 — 코드가 문서 경로를 참조하지 않으므로 예상대로 영향 없음(0 오류, 기존 81개 테스트 그대로 통과).
+- Harness 섹션(`CLAUDE.md`의 MSBuild/nuget 커맨드)은 문서 이동과 무관한 경로(전부 `SampleOrderSystemLib`/`SampleOrderSystemApp`/`SampleOrderSystemTest`/`x64/Debug` 기준)라 갱신할 것이 없었음 — 5번 항목(문서 최종화)에서 실제 재실행으로 다시 확인 예정.

@@ -115,7 +115,7 @@
 
 **완료 기준**: 메인 메뉴 표시 및 종료, 기존 PoC 테스트 이식 통과
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase05_design.md` — ✅ 완료 (도메인 모델, JSON Repository, IClock, 메인 메뉴 골격 구현 및 빌드/테스트 검증 완료)
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase05_design.md` — ✅ 완료 (도메인 모델, JSON Repository, IClock, 메인 메뉴 골격 구현 및 빌드/테스트 검증 완료)
 
 ---
 
@@ -130,7 +130,7 @@
 
 **완료 기준**: 등록 → 재시작 → 조회 시 데이터 유지 확인, gmock 기반 단위 테스트
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase06_design.md` — ✅ 완료 (시료 등록/조회/검색, 재고 필드 추가, `ISubMenuController` 서브메뉴 위임 패턴 확립 및 검증 완료)
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase06_design.md` — ✅ 완료 (시료 등록/조회/검색, 재고 필드 추가, `ISubMenuController` 서브메뉴 위임 패턴 확립 및 검증 완료)
 
 ---
 
@@ -144,7 +144,7 @@
 
 **완료 기준**: 예약 생성 후 조회 시 `RESERVED` 상태 확인
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase07_design.md` — ✅ 완료 (예약 확인 Y/N 단계, 주문번호/상태 출력, 뒤로가기 흐름 구현 및 검증 완료)
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase07_design.md` — ✅ 완료 (예약 확인 Y/N 단계, 주문번호/상태 출력, 뒤로가기 흐름 구현 및 검증 완료)
 
 ---
 
@@ -166,7 +166,7 @@
 - 승인 후 시료 조회(화면) 시 재고 수량이 아직 차감되지 않은 것으로 표시됨을 검증
 - gmock 기반 승인 로직 단위 테스트 (재고 충분/부족/거절 각 케이스)
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase08_design.md` — ✅ 완료 (재고 이중 관리, 승인/거절, 연속 승인 재고 중복 방지 구현 및 검증 완료)
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase08_design.md` — ✅ 완료 (재고 이중 관리, 승인/거절, 연속 승인 재고 중복 방지 구현 및 검증 완료)
 
 ---
 
@@ -189,7 +189,7 @@
 - 생산 진행 중에는 재고 미반영, 완료 후에만 반영됨을 테스트로 검증
 - gmock으로 시간 소스(Clock)를 목킹하여 실시간 의존성 없는 단위 테스트 작성
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase09_design.md` — ✅ 완료 (설계+구현)
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase09_design.md` — ✅ 완료 (설계+구현)
 
 ---
 
@@ -203,7 +203,7 @@
 
 **완료 기준**: 출고 처리 후 화면 표시 재고가 실제로 감소함을 확인, gmock 기반 단위 테스트
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase10_design.md` — ✅ 완료 (설계+구현)
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase10_design.md` — ✅ 완료 (설계+구현)
 
 ---
 
@@ -222,7 +222,7 @@
 2. 개별 조회(주문량 확인/재고량 확인)는 만들지 않고 **통합 뷰 하나만 제공**
 3. 새로고침은 화면 클리어 없이 **아래로 계속 쌓이는 방식**(Phase 9 생산라인 조회의 클리어+덮어쓰기 방식과 반대)
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase11_design.md` — ✅ 완료 (설계+구현)
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase11_design.md` — ✅ 완료 (설계+구현)
 
 ---
 
@@ -240,6 +240,8 @@
 
 **완료 기준**: 5개 저장소 모두 최신 상태로 push 완료, 전체 시나리오 수동 실행 검증 완료
 
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase12_design.md` — 진행 중 (Clean Code+SOLID 리뷰/gmock 커버리지 점검/E2E 시나리오 검증 완료, 문서 폴더 정리 진행 중)
+
 ---
 
 ## 진행 방식 메모
@@ -248,4 +250,4 @@
 - Phase 1~4(PoC)는 각자 독립 저장소이므로 병렬로 진행 가능하나, 기본은 순서대로 진행한다.
 - Phase 5 이후 메인 프로젝트는 PoC의 "코드 이식"이지 "저장소 연결(submodule)"이 아님에 유의한다.
 - Phase 8, 9는 재고 이중 관리·실시간 처리라는 프로젝트의 핵심 난이도 구간이므로, 각 Phase 완료 후 반드시 완료 기준의 테스트 시나리오를 실행해 검증한다.
-- **Phase 5부터는 각 Phase마다 `SampleOrderSystem-JeonHyunji-10225419/docs/phase{NN}_design.md` 설계 문서를 작성한다** (번호는 2자리 0채움: `phase05`, `phase06`, ... `phase12`). Phase 착수 전에 먼저 설계를 문서화하고, 완료 후 실제 구현 내용/검증 결과를 반영한다. 각 문서는 해당 저장소의 `README.md`/`CLAUDE.md`와 이 `PLAN.md`의 해당 Phase 항목에서 링크로 연결한다.
+- **Phase 5부터는 각 Phase마다 `SampleOrderSystem-JeonHyunji-10225419/docs/design/phase{NN}_design.md` 설계 문서를 작성한다** (번호는 2자리 0채움: `phase05`, `phase06`, ... `phase12`). Phase 착수 전에 먼저 설계를 문서화하고, 완료 후 실제 구현 내용/검증 결과를 반영한다. 각 문서는 해당 저장소의 `README.md`/`CLAUDE.md`와 이 `PLAN.md`의 해당 Phase 항목에서 링크로 연결한다.

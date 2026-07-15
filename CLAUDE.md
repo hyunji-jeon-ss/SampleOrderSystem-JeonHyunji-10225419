@@ -1,38 +1,38 @@
 # CLAUDE.md — SampleOrderSystem-JeonHyunji-10225419
 
 ## 프로젝트 개요
-반도체 시료 생산주문관리 시스템 메인 프로젝트. 상세 요구사항은 `PRD.md`, 구현 순서는 `PLAN.md`를 따른다.
+반도체 시료 생산주문관리 시스템 메인 프로젝트. 상세 요구사항은 `docs/PRD.md`, 구현 순서는 `docs/PLAN.md`를 따른다.
 
 ## 기술 스택 / 컨벤션
 - C++20, Visual Studio(MSBuild, .vcxproj), gmock(NuGet)
 - nlohmann/json (NuGet 패키지 `nlohmann.json`) — `DataPersistence` PoC와 동일한 라이브러리/사용법 유지
-- 코드 컨벤션은 `CODE_CONVENTION.md`를 따른다 (PascalCase 클래스, camelCase 메서드, snake_case 변수 등).
+- 코드 컨벤션은 `docs/CODE_CONVENTION.md`를 따른다 (PascalCase 클래스, camelCase 메서드, snake_case 변수 등).
 
 ## 아키텍처
 - MVC 구조: `SampleOrderSystemLib/` 아래 `model/`, `view/`, `controller/`, `repository/`, `clock/` (정적 라이브러리) + `SampleOrderSystemApp/`(실행 파일) + `SampleOrderSystemTest/`(gmock 테스트), 3-프로젝트 구조 (`ConsoleMVC`/`DataPersistence` PoC와 동일한 패턴)
 - 영속성 계층: **JSON 파일 기반**(nlohmann/json), `Sample`/`Order` 데이터를 재실행 후에도 유지 (`JsonSampleRepository`, `JsonOrderRepository`)
-- ID/주문번호 자동 채번: 시료 `S-XXX`, 주문 `ORD-YYYYMMDD-NNNN` (`PRD.md` 6.2, 6.3 참고). 주문번호 채번은 `IClock`에 의존하므로 시간 관련 로직은 항상 이 인터페이스를 통해 목킹 가능하게 유지한다.
-- 재고는 **내부 판단용 가용 재고(availableStock)**와 **화면 표시용 재고(physicalStock)**로 이원화하여 관리 (`PRD.md` 6.4, 6.5 참고) — Phase 6/8에서 구현 예정, 아직 미구현
-- 생산라인은 현실 시간(ms 단위) 기반 타이머로 동작하며, 프로그램 재기동 시 저장된 시작/완료 시각을 기준으로 상태를 복원한다 (`PRD.md` 6.6 참고) — Phase 9에서 구현 예정, 아직 미구현
+- ID/주문번호 자동 채번: 시료 `S-XXX`, 주문 `ORD-YYYYMMDD-NNNN` (`docs/PRD.md` 6.2, 6.3 참고). 주문번호 채번은 `IClock`에 의존하므로 시간 관련 로직은 항상 이 인터페이스를 통해 목킹 가능하게 유지한다.
+- 재고는 **내부 판단용 가용 재고(availableStock)**와 **화면 표시용 재고(physicalStock)**로 이원화하여 관리 (`docs/PRD.md` 6.4, 6.5 참고) — Phase 6/8에서 구현 예정, 아직 미구현
+- 생산라인은 현실 시간(ms 단위) 기반 타이머로 동작하며, 프로그램 재기동 시 저장된 시작/완료 시각을 기준으로 상태를 복원한다 (`docs/PRD.md` 6.6 참고) — Phase 9에서 구현 예정, 아직 미구현
 
 ## 설계 문서
-Phase별 상세 설계는 `docs/phase{NN}_design.md`에 기록한다 (예: `docs/phase05_design.md`). 새 Phase를 시작하기 전에 해당 문서를 먼저 작성/갱신한다.
+Phase별 상세 설계는 `docs/design/phase{NN}_design.md`에 기록한다 (예: `docs/design/phase05_design.md`). 새 Phase를 시작하기 전에 해당 문서를 먼저 작성/갱신한다.
 
 **필수 항목 — 출력 화면 예시**: 콘솔에 새로운 화면/메뉴가 추가되거나 기존 화면의 출력 형식이 바뀌는 Phase라면, 설계 문서에 반드시 실제 콘솔 출력을 흉내 낸 **"출력 화면 예시"(코드 블록)** 섹션을 포함한다. 정상 케이스뿐 아니라 빈 목록/에러 등 주요 분기가 있다면 그 화면 예시도 함께 보여준다. (텍스트 설명만으로는 컬럼 정렬, 줄바꿈, 문구 톤 등을 미리 확인하기 어려워 구현 후 재작업이 잦았던 데서 나온 규칙.)
 
 ## 진행 상황
-- **Phase 5 완료**: 도메인 모델(`Sample`/`Order`/`OrderStatus`), JSON Repository, `IClock`/`SystemClock`, 메인 메뉴 골격(표시·종료만 동작, 1~6번은 플레이스홀더) 구현 및 검증 완료. 설계 문서: `docs/phase05_design.md`
-- **Phase 6 완료**: 시료 등록/조회/검색(`SampleController`), `Sample`에 재고 필드(`physical_stock`/`available_stock`) 추가, `ISubMenuController` 서브메뉴 위임 패턴 확립. 설계 문서: `docs/phase06_design.md`
-- **Phase 7 완료**: 시료 주문(예약) 기능(`OrderController`) — 입력 내용 확인(Y/N) → 확정 시 저장+주문번호/상태 출력, 취소 시 미저장. `orderStatusToString`/`orderStatusFromString`을 `model/OrderStatusText.h/.cpp`로 공용 추출. 설계 문서: `docs/phase07_design.md`
-- **Phase 8 완료**: 주문 승인/거절 기능(`ApprovalController`) — 재고 이중 관리(`available_stock`/`physical_stock`) 구현. 승인 시점 가용 재고로 충분/부족 분기, 부족 시 `Order.shortage_quantity`/`enqueued_at_millis` 기록. `production/ProductionCalculator.h/.cpp` 신설. 설계 문서: `docs/phase08_design.md`
+- **Phase 5 완료**: 도메인 모델(`Sample`/`Order`/`OrderStatus`), JSON Repository, `IClock`/`SystemClock`, 메인 메뉴 골격(표시·종료만 동작, 1~6번은 플레이스홀더) 구현 및 검증 완료. 설계 문서: `docs/design/phase05_design.md`
+- **Phase 6 완료**: 시료 등록/조회/검색(`SampleController`), `Sample`에 재고 필드(`physical_stock`/`available_stock`) 추가, `ISubMenuController` 서브메뉴 위임 패턴 확립. 설계 문서: `docs/design/phase06_design.md`
+- **Phase 7 완료**: 시료 주문(예약) 기능(`OrderController`) — 입력 내용 확인(Y/N) → 확정 시 저장+주문번호/상태 출력, 취소 시 미저장. `orderStatusToString`/`orderStatusFromString`을 `model/OrderStatusText.h/.cpp`로 공용 추출. 설계 문서: `docs/design/phase07_design.md`
+- **Phase 8 완료**: 주문 승인/거절 기능(`ApprovalController`) — 재고 이중 관리(`available_stock`/`physical_stock`) 구현. 승인 시점 가용 재고로 충분/부족 분기, 부족 시 `Order.shortage_quantity`/`enqueued_at_millis` 기록. `production/ProductionCalculator.h/.cpp` 신설. 설계 문서: `docs/design/phase08_design.md`
 - **리팩터링(Phase 8 이후)**: 코드 리뷰에서 발견된 중복/버그 정리 — `JsonSampleRepository`/`JsonOrderRepository`의 파일 I/O 중복을 `repository/JsonFileStore.h/.cpp`(`readJsonArray`/`writeJsonArray`)로 공용화, `ConsoleSampleView`의 메뉴 헤더 `[1]` 중복 출력 버그 수정, `MainController`의 서브메뉴 위임 분기를 `runSubMenuOrShowPlaceholder()` 헬퍼로 정리.
-- **Phase 9 완료**: 생산라인 기능(`ProductionQueueProcessor`, `ProductionController`) — `PRODUCING` 주문을 단일 FIFO 라인에서 폴링 기반으로 실시간 처리, 완료 시 `physical_stock` 반영, 재기동 시 밀린 완료 건을 백데이팅 체인으로 순서대로 복원. 생산라인 조회 화면은 진행률 바 포함, 새로고침 가능한 반복 조회(이 메뉴만 화면 클리어). `MainController`에 다섯 번째 서브메뉴(`production_menu`)와 `ProductionQueueProcessor*`(매 루프 `advanceQueue()` 호출) 연결. 설계 문서: `docs/phase09_design.md`
-- **Phase 10 완료**: 출고 처리 기능(`ReleaseController`) — `CONFIRMED` 목록 조회 → 출고 확인(Y/N) → `RELEASED` 전환 + `physical_stock -= order.quantity`(수율 보정 여분은 재고로 남김). `available_stock`은 건드리지 않음(이미 승인 시점에 반영 완료). `MainController`에 여섯 번째 서브메뉴(`release_menu`) 연결. 설계 문서: `docs/phase10_design.md`
-- **Phase 11 완료**: 모니터링 기능(`MonitoringController`) — `[1]` 주문 현황(상태별 건수, REJECTED 제외) / `[2]` 재고 현황(여유/부족/고갈, 미출고 수요 합계 기준 판정) 분리형 메뉴. Phase 9 생산라인 조회와 달리 화면 클리어 없이 선택할 때마다 결과가 아래로 이어붙는 방식. `MainController`에 일곱 번째(마지막) 서브메뉴(`monitoring_menu`) 연결 — 메인 메뉴 1~6번이 모두 연결 완료. 설계 문서: `docs/phase11_design.md`
-- 다음: Phase 12(통합 테스트/마무리) — `PLAN.md` 참고.
+- **Phase 9 완료**: 생산라인 기능(`ProductionQueueProcessor`, `ProductionController`) — `PRODUCING` 주문을 단일 FIFO 라인에서 폴링 기반으로 실시간 처리, 완료 시 `physical_stock` 반영, 재기동 시 밀린 완료 건을 백데이팅 체인으로 순서대로 복원. 생산라인 조회 화면은 진행률 바 포함, 새로고침 가능한 반복 조회(이 메뉴만 화면 클리어). `MainController`에 다섯 번째 서브메뉴(`production_menu`)와 `ProductionQueueProcessor*`(매 루프 `advanceQueue()` 호출) 연결. 설계 문서: `docs/design/phase09_design.md`
+- **Phase 10 완료**: 출고 처리 기능(`ReleaseController`) — `CONFIRMED` 목록 조회 → 출고 확인(Y/N) → `RELEASED` 전환 + `physical_stock -= order.quantity`(수율 보정 여분은 재고로 남김). `available_stock`은 건드리지 않음(이미 승인 시점에 반영 완료). `MainController`에 여섯 번째 서브메뉴(`release_menu`) 연결. 설계 문서: `docs/design/phase10_design.md`
+- **Phase 11 완료**: 모니터링 기능(`MonitoringController`) — `[1]` 주문 현황(상태별 건수, REJECTED 제외) / `[2]` 재고 현황(여유/부족/고갈, 미출고 수요 합계 기준 판정) 분리형 메뉴. Phase 9 생산라인 조회와 달리 화면 클리어 없이 선택할 때마다 결과가 아래로 이어붙는 방식. `MainController`에 일곱 번째(마지막) 서브메뉴(`monitoring_menu`) 연결 — 메인 메뉴 1~6번이 모두 연결 완료. 설계 문서: `docs/design/phase11_design.md`
+- **Phase 12 진행 중**: 통합 테스트/마무리 — 체크리스트: `docs/design/phase12_design.md` (Clean Code+SOLID 리뷰 완료, gmock 커버리지 점검 완료, E2E 시나리오 검증 완료, 문서 폴더 정리 진행 중)
 
 ## 개발 순서
-`PLAN.md`의 Phase 5부터 Phase 12까지 순서대로 진행한다. 각 Phase 완료 시 해당 Phase의 "완료 기준" 항목을 충족했는지 확인한다.
+`docs/PLAN.md`의 Phase 5부터 Phase 12까지 순서대로 진행한다. 각 Phase 완료 시 해당 Phase의 "완료 기준" 항목을 충족했는지 확인한다.
 
 ## 테스트
 - 모든 기능은 구현 시마다 gmock 기반 단위 테스트를 함께 작성한다.
@@ -44,7 +44,7 @@ Phase별 상세 설계는 `docs/phase{NN}_design.md`에 기록한다 (예: `docs
 2. 콘솔 진입점(main)에서 `SetConsoleOutputCP(CP_UTF8)` / `SetConsoleCP(CP_UTF8)` 호출
 
 ## 커밋 컨벤션
-`COMMIT_CONVENTION.md`를 따른다. 커밋 메시지는 `<헤더> 변경 내용` 형식이며, 헤더는 `<FEATURE>`/`<FIX>`/`<DOCS>`/`<STYLE>`/`<REFACTOR>`/`<TEST>`/`<CHORE>` 중 하나만 사용한다.
+`docs/COMMIT_CONVENTION.md`를 따른다. 커밋 메시지는 `<헤더> 변경 내용` 형식이며, 헤더는 `<FEATURE>`/`<FIX>`/`<DOCS>`/`<STYLE>`/`<REFACTOR>`/`<TEST>`/`<CHORE>` 중 하나만 사용한다.
 
 ## 빌드/실행
 Visual Studio에서 솔루션을 열어 빌드/실행한다. **빌드가 실패한 상태에서는 절대 커밋하지 않는다** — 반드시 로컬 빌드 성공(및 가능하면 테스트 통과)을 확인한 뒤 커밋한다. 자세한 내용은 상위 `Semiconductor` 폴더의 `CLAUDE.md` 참고.
