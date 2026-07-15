@@ -93,3 +93,31 @@ TEST_F(JsonSampleRepositoryTest, UpdateExistingSampleOverwritesFields)
     EXPECT_EQ(found->name, "Updated");
     EXPECT_EQ(found->avg_production_time_ms, 200);
 }
+
+TEST_F(JsonSampleRepositoryTest, NewSampleStartsWithZeroStock)
+{
+    JsonSampleRepository repository(file_path);
+
+    const Sample saved = repository.save(Sample{ "", "실리콘 웨이퍼-8인치", 500, 0.92 });
+
+    EXPECT_EQ(saved.physical_stock, 0);
+    EXPECT_EQ(saved.available_stock, 0);
+}
+
+TEST_F(JsonSampleRepositoryTest, StockFieldsSurviveRepositoryRecreation)
+{
+    {
+        JsonSampleRepository repository(file_path);
+        const Sample saved = repository.save(Sample{ "", "실리콘 웨이퍼-8인치", 500, 0.92 });
+
+        Sample updated = saved;
+        updated.physical_stock = 480;
+        updated.available_stock = 330;
+        repository.save(updated);
+    }
+
+    JsonSampleRepository reloaded(file_path);
+    ASSERT_EQ(reloaded.findAll().size(), 1u);
+    EXPECT_EQ(reloaded.findAll()[0].physical_stock, 480);
+    EXPECT_EQ(reloaded.findAll()[0].available_stock, 330);
+}

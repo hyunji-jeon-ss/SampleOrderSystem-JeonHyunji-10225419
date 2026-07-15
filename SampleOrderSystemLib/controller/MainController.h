@@ -2,6 +2,7 @@
 
 #include "clock/IClock.h"
 #include "controller/IInputReader.h"
+#include "controller/ISubMenuController.h"
 #include "repository/IOrderRepository.h"
 #include "repository/ISampleRepository.h"
 #include "view/IMainView.h"
@@ -12,7 +13,8 @@ class MainController
 {
     public:
         MainController(IMainView& view, IInputReader& input_reader,
-            ISampleRepository& sample_repository, IOrderRepository& order_repository, IClock& clock);
+            ISampleRepository& sample_repository, IOrderRepository& order_repository, IClock& clock,
+            ISubMenuController* sample_menu = nullptr);
 
         void run();
         bool processCommand(const std::string& command);
@@ -25,4 +27,5 @@ class MainController
         ISampleRepository& sample_repository;
         IOrderRepository& order_repository;
         IClock& clock;
+        ISubMenuController* sample_menu;
 };

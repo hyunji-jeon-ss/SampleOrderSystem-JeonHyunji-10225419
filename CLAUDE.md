@@ -20,7 +20,8 @@ Phase별 상세 설계는 `docs/phase{NN}_design.md`에 기록한다 (예: `docs
 
 ## 진행 상황
 - **Phase 5 완료**: 도메인 모델(`Sample`/`Order`/`OrderStatus`), JSON Repository, `IClock`/`SystemClock`, 메인 메뉴 골격(표시·종료만 동작, 1~6번은 플레이스홀더) 구현 및 검증 완료. 설계 문서: `docs/phase05_design.md`
-- 다음: Phase 6(시료 관리) — `MainController::processCommand`의 "1" 분기에 실제 시료 등록/조회/검색 기능을 연결.
+- **Phase 6 완료**: 시료 등록/조회/검색(`SampleController`), `Sample`에 재고 필드(`physical_stock`/`available_stock`) 추가, `ISubMenuController` 서브메뉴 위임 패턴 확립. 설계 문서: `docs/phase06_design.md`
+- 다음: Phase 7(시료 주문) — `MainController::processCommand`의 "2" 분기에 주문 예약 기능을 연결 (`ISubMenuController` 패턴 재사용).
 
 ## 개발 순서
 `PLAN.md`의 Phase 5부터 Phase 12까지 순서대로 진행한다. 각 Phase 완료 시 해당 Phase의 "완료 기준" 항목을 충족했는지 확인한다.

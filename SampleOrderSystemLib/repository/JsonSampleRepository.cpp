@@ -17,7 +17,9 @@ namespace
             element.at("id").get<std::string>(),
             element.at("name").get<std::string>(),
             element.at("avg_production_time_ms").get<long long>(),
-            element.at("yield").get<double>()
+            element.at("yield").get<double>(),
+            element.at("physical_stock").get<int>(),
+            element.at("available_stock").get<int>()
         };
     }
 
@@ -27,7 +29,9 @@ namespace
             {"id", sample.id},
             {"name", sample.name},
             {"avg_production_time_ms", sample.avg_production_time_ms},
-            {"yield", sample.yield}
+            {"yield", sample.yield},
+            {"physical_stock", sample.physical_stock},
+            {"available_stock", sample.available_stock}
         };
     }
 

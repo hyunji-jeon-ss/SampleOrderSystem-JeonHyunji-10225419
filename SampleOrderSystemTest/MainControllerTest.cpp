@@ -1,5 +1,6 @@
 #include "clock/IClock.h"
 #include "controller/IInputReader.h"
+#include "controller/ISubMenuController.h"
 #include "controller/MainController.h"
 #include "repository/IOrderRepository.h"
 #include "repository/ISampleRepository.h"
@@ -48,6 +49,12 @@ class MockClock : public IClock
         MOCK_METHOD(int64_t, nowMillis, (), (override));
 };
 
+class MockSubMenuController : public ISubMenuController
+{
+    public:
+        MOCK_METHOD(void, run, (), (override));
+};
+
 TEST(MainControllerTest, ExitCommandStopsLoop)
 {
     MockMainView view;
@@ -70,6 +77,22 @@ TEST(MainControllerTest, UnimplementedMenuShowsPlaceholderMessage)
     MainController controller(view, input_reader, sample_repository, order_repository, clock);
 
     EXPECT_CALL(view, showMessage(_)).Times(1);
+
+    EXPECT_TRUE(controller.processCommand("1"));
+}
+
+TEST(MainControllerTest, SampleMenuCommandDelegatesToSubMenuControllerWhenProvided)
+{
+    MockMainView view;
+    MockInputReader input_reader;
+    MockSampleRepository sample_repository;
+    MockOrderRepository order_repository;
+    MockClock clock;
+    MockSubMenuController sample_menu;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock, &sample_menu);
+
+    EXPECT_CALL(sample_menu, run()).Times(1);
+    EXPECT_CALL(view, showMessage(_)).Times(0);
 
     EXPECT_TRUE(controller.processCommand("1"));
 }

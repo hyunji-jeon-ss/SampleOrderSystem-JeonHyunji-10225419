@@ -130,6 +130,8 @@
 
 **완료 기준**: 등록 → 재시작 → 조회 시 데이터 유지 확인, gmock 기반 단위 테스트
 
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase06_design.md` — ✅ 완료 (시료 등록/조회/검색, 재고 필드 추가, `ISubMenuController` 서브메뉴 위임 패턴 확립 및 검증 완료)
+
 ---
 
 ## Phase 7 — 시료 주문(예약) 기능

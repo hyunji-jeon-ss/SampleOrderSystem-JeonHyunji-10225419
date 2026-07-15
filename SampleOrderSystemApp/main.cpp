@@ -1,9 +1,11 @@
 #include "clock/SystemClock.h"
 #include "controller/ConsoleInputReader.h"
 #include "controller/MainController.h"
+#include "controller/SampleController.h"
 #include "repository/JsonOrderRepository.h"
 #include "repository/JsonSampleRepository.h"
 #include "view/ConsoleMainView.h"
+#include "view/ConsoleSampleView.h"
 
 #define NOMINMAX
 #include <windows.h>
@@ -18,9 +20,11 @@ int main()
     JsonOrderRepository order_repository("orders.json", clock);
 
     ConsoleMainView view;
+    ConsoleSampleView sample_view;
     ConsoleInputReader input_reader;
 
-    MainController controller(view, input_reader, sample_repository, order_repository, clock);
+    SampleController sample_menu(sample_view, input_reader, sample_repository);
+    MainController controller(view, input_reader, sample_repository, order_repository, clock, &sample_menu);
     controller.run();
 
     return 0;
