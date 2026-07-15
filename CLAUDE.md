@@ -30,4 +30,4 @@
 `COMMIT_CONVENTION.md`를 따른다. 커밋 메시지는 `<헤더> 변경 내용` 형식이며, 헤더는 `<FEATURE>`/`<FIX>`/`<DOCS>`/`<STYLE>`/`<REFACTOR>`/`<TEST>`/`<CHORE>` 중 하나만 사용한다.
 
 ## 빌드/실행
-Visual Studio에서 솔루션을 열어 빌드/실행한다.
+Visual Studio에서 솔루션을 열어 빌드/실행한다. **빌드가 실패한 상태에서는 절대 커밋하지 않는다** — 반드시 로컬 빌드 성공(및 가능하면 테스트 통과)을 확인한 뒤 커밋한다. 자세한 내용은 상위 `Semiconductor` 폴더의 `CLAUDE.md` 참고.
