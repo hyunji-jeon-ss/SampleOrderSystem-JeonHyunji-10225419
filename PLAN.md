@@ -144,7 +144,7 @@
 
 **완료 기준**: 예약 생성 후 조회 시 `RESERVED` 상태 확인
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase07_design.md` — 작성 완료(설계), 구현 대기
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase07_design.md` — ✅ 완료 (예약 확인 Y/N 단계, 주문번호/상태 출력, 뒤로가기 흐름 구현 및 검증 완료)
 
 ---
 

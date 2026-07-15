@@ -71,6 +71,7 @@
     <ClInclude Include="model\Sample.h" />
     <ClInclude Include="model\Order.h" />
     <ClInclude Include="model\OrderStatus.h" />
+    <ClInclude Include="model\OrderStatusText.h" />
     <ClInclude Include="console\ConsoleUtil.h" />
     <ClInclude Include="clock\IClock.h" />
     <ClInclude Include="clock\SystemClock.h" />
@@ -83,22 +84,28 @@
     <ClInclude Include="view\ConsoleMainView.h" />
     <ClInclude Include="view\ISampleView.h" />
     <ClInclude Include="view\ConsoleSampleView.h" />
+    <ClInclude Include="view\IOrderView.h" />
+    <ClInclude Include="view\ConsoleOrderView.h" />
     <ClInclude Include="controller\IInputReader.h" />
     <ClInclude Include="controller\ConsoleInputReader.h" />
     <ClInclude Include="controller\ISubMenuController.h" />
     <ClInclude Include="controller\MainController.h" />
     <ClInclude Include="controller\SampleController.h" />
+    <ClInclude Include="controller\OrderController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="console\ConsoleUtil.cpp" />
     <ClCompile Include="clock\SystemClock.cpp" />
     <ClCompile Include="clock\TimeFormat.cpp" />
+    <ClCompile Include="model\OrderStatusText.cpp" />
     <ClCompile Include="repository\JsonSampleRepository.cpp" />
     <ClCompile Include="repository\JsonOrderRepository.cpp" />
     <ClCompile Include="view\ConsoleMainView.cpp" />
     <ClCompile Include="view\ConsoleSampleView.cpp" />
+    <ClCompile Include="view\ConsoleOrderView.cpp" />
     <ClCompile Include="controller\ConsoleInputReader.cpp" />
     <ClCompile Include="controller\MainController.cpp" />
+    <ClCompile Include="controller\OrderController.cpp" />
     <ClCompile Include="controller\SampleController.cpp" />
   </ItemGroup>
   <ItemGroup>

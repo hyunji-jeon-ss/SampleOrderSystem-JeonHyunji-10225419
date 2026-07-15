@@ -81,6 +81,7 @@
     <ClCompile Include="JsonOrderRepositoryTest.cpp" />
     <ClCompile Include="MainControllerTest.cpp" />
     <ClCompile Include="SampleControllerTest.cpp" />
+    <ClCompile Include="OrderControllerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SampleOrderSystemLib\SampleOrderSystemLib.vcxproj">

@@ -1,10 +1,12 @@
 #include "clock/SystemClock.h"
 #include "controller/ConsoleInputReader.h"
 #include "controller/MainController.h"
+#include "controller/OrderController.h"
 #include "controller/SampleController.h"
 #include "repository/JsonOrderRepository.h"
 #include "repository/JsonSampleRepository.h"
 #include "view/ConsoleMainView.h"
+#include "view/ConsoleOrderView.h"
 #include "view/ConsoleSampleView.h"
 
 #define NOMINMAX
@@ -21,10 +23,13 @@ int main()
 
     ConsoleMainView view;
     ConsoleSampleView sample_view;
+    ConsoleOrderView order_view;
     ConsoleInputReader input_reader;
 
     SampleController sample_menu(sample_view, input_reader, sample_repository);
-    MainController controller(view, input_reader, sample_repository, order_repository, clock, &sample_menu);
+    OrderController order_menu(order_view, input_reader, sample_repository, order_repository);
+    MainController controller(view, input_reader, sample_repository, order_repository, clock,
+        &sample_menu, &order_menu);
     controller.run();
 
     return 0;

@@ -97,6 +97,36 @@ TEST(MainControllerTest, SampleMenuCommandDelegatesToSubMenuControllerWhenProvid
     EXPECT_TRUE(controller.processCommand("1"));
 }
 
+TEST(MainControllerTest, OrderMenuPlaceholderMessageWhenNotProvided)
+{
+    MockMainView view;
+    MockInputReader input_reader;
+    MockSampleRepository sample_repository;
+    MockOrderRepository order_repository;
+    MockClock clock;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock);
+
+    EXPECT_CALL(view, showMessage(_)).Times(1);
+
+    EXPECT_TRUE(controller.processCommand("2"));
+}
+
+TEST(MainControllerTest, OrderMenuCommandDelegatesToSubMenuControllerWhenProvided)
+{
+    MockMainView view;
+    MockInputReader input_reader;
+    MockSampleRepository sample_repository;
+    MockOrderRepository order_repository;
+    MockClock clock;
+    MockSubMenuController order_menu;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock, nullptr, &order_menu);
+
+    EXPECT_CALL(order_menu, run()).Times(1);
+    EXPECT_CALL(view, showMessage(_)).Times(0);
+
+    EXPECT_TRUE(controller.processCommand("2"));
+}
+
 TEST(MainControllerTest, UnknownCommandShowsErrorMessage)
 {
     MockMainView view;
