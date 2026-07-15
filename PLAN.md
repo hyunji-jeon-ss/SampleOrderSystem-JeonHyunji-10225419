@@ -222,7 +222,7 @@
 2. 개별 조회(주문량 확인/재고량 확인)는 만들지 않고 **통합 뷰 하나만 제공**
 3. 새로고침은 화면 클리어 없이 **아래로 계속 쌓이는 방식**(Phase 9 생산라인 조회의 클리어+덮어쓰기 방식과 반대)
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase11_design.md` — 작성 완료(설계), 구현 대기
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase11_design.md` — ✅ 완료 (설계+구현)
 
 ---
 

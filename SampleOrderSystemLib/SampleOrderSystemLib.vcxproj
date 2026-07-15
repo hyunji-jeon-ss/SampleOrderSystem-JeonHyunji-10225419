@@ -95,6 +95,8 @@
     <ClInclude Include="view\ConsoleProductionView.h" />
     <ClInclude Include="view\IReleaseView.h" />
     <ClInclude Include="view\ConsoleReleaseView.h" />
+    <ClInclude Include="view\IMonitoringView.h" />
+    <ClInclude Include="view\ConsoleMonitoringView.h" />
     <ClInclude Include="controller\IInputReader.h" />
     <ClInclude Include="controller\ConsoleInputReader.h" />
     <ClInclude Include="controller\ISubMenuController.h" />
@@ -104,6 +106,7 @@
     <ClInclude Include="controller\ApprovalController.h" />
     <ClInclude Include="controller\ProductionController.h" />
     <ClInclude Include="controller\ReleaseController.h" />
+    <ClInclude Include="controller\MonitoringController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="console\ConsoleUtil.cpp" />
@@ -121,6 +124,7 @@
     <ClCompile Include="view\ConsoleApprovalView.cpp" />
     <ClCompile Include="view\ConsoleProductionView.cpp" />
     <ClCompile Include="view\ConsoleReleaseView.cpp" />
+    <ClCompile Include="view\ConsoleMonitoringView.cpp" />
     <ClCompile Include="controller\ConsoleInputReader.cpp" />
     <ClCompile Include="controller\MainController.cpp" />
     <ClCompile Include="controller\OrderController.cpp" />
@@ -128,6 +132,7 @@
     <ClCompile Include="controller\ApprovalController.cpp" />
     <ClCompile Include="controller\ProductionController.cpp" />
     <ClCompile Include="controller\ReleaseController.cpp" />
+    <ClCompile Include="controller\MonitoringController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

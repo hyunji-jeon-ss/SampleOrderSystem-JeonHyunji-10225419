@@ -166,3 +166,13 @@ S-005   산화막 웨이퍼-SiO2            46 ea      부족
 
 ## 다음 Phase로 이월되는 항목
 - 없음 — Phase 11이 `PLAN.md`상 마지막 기능 Phase다. 이후 Phase 12(통합 테스트/마무리)로 이어진다.
+
+## 구현 결과 (완료)
+- 설계 그대로 구현됨. `IMonitoringView`(`OrderStatusSummary`/`StockStatus`/`StockStatusRow`), `ConsoleMonitoringView`, `MonitoringController` 신규.
+- `run()`은 화면 클리어 없이 매 반복마다 `display()` → `"[1] 새로고침   [0] 뒤로가기 > "` 프롬프트 → 입력이 `"0"`이면 종료, 그 외("1" 포함)에는 계속 — `ProductionController`의 "R"/그 외 입력 반복 패턴에서 화면 클리어만 뺀 형태.
+- `buildStockStatusRows()`가 시료별로 `order_repository.findAll()`을 순회해 `RESERVED`/`PRODUCING`/`CONFIRMED` 주문의 수량 합계(미출고 수요)를 구하고, `physical_stock == 0` → 고갈, `physical_stock < 미출고 수요` → 부족, 그 외 → 여유로 판정한다.
+- `MainController`에 `monitoring_menu`(일곱 번째, 마지막 trailing default)로 연결, `processCommand("4")`가 위임되도록 변경 — 이제 메인 메뉴 1~6번이 모두 연결되어 `runSubMenuOrShowPlaceholder(nullptr)` 분기는 코드상 존재하지만 실제로는 더 이상 호출되지 않는다.
+- `main.cpp`에 `ConsoleMonitoringView`/`MonitoringController` 인스턴스 배선.
+- gmock 테스트 78개 전체 통과 (`MonitoringControllerTest` 신규 7개: 주문 상태별 집계 및 REJECTED 제외, 재고 상태 여유/부족/고갈 3가지 판정, 미출고 수요 계산 시 REJECTED/RELEASED 제외, 새로고침 시 재조회, 뒤로가기 / `MainControllerTest` 신규 2개: `monitoring_menu` 위임, 플레이스홀더).
+  - **구현 중 발견한 테스트 실수**: `display()` 한 번 호출에 `buildOrderStatusSummary()`와 `buildStockStatusRows()`가 각각 `order_repository.findAll()`을 한 번씩 호출해 반복당 2회 호출된다는 점을 처음엔 놓쳐서 "새로고침 시 재조회" 테스트가 실패했다 (기대값 2회 vs 실제 4회). 반복 횟수 × 2로 기대값을 수정해 해결.
+- 실제 실행(수동 스모크 테스트)으로 검증: `[4]` 진입 → 주문 현황(전부 RELEASED 3건, 나머지 0건) + 시료별 재고/상태(전부 "여유") 출력 확인 → `"1"` 입력 시 화면이 지워지지 않고 동일한 스냅샷이 그 아래에 다시 이어붙는 것 확인 → `"0"` 입력 시 메인 메뉴로 정상 복귀.

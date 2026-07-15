@@ -18,7 +18,7 @@ class MainController
             ISubMenuController* sample_menu = nullptr, ISubMenuController* order_menu = nullptr,
             ISubMenuController* approval_menu = nullptr, ISubMenuController* production_menu = nullptr,
             ProductionQueueProcessor* production_queue_processor = nullptr,
-            ISubMenuController* release_menu = nullptr);
+            ISubMenuController* release_menu = nullptr, ISubMenuController* monitoring_menu = nullptr);
 
         void run();
         bool processCommand(const std::string& command);
@@ -38,4 +38,5 @@ class MainController
         ISubMenuController* production_menu;
         ProductionQueueProcessor* production_queue_processor;
         ISubMenuController* release_menu;
+        ISubMenuController* monitoring_menu;
 };
