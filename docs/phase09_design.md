@@ -212,3 +212,14 @@ class ProductionController : public ISubMenuController
 ## 다음 Phase로 이월되는 항목
 - 출고 처리(`CONFIRMED` → `RELEASED`, 이때 비로소 `physical_stock` 차감) → Phase 10
 - 상태별 주문 수 / 재고 현황 종합 모니터링 화면 → Phase 11 (참고: 메인 메뉴 "4번"이 모니터링이며, Phase 9는 "5번" 생산라인 조회임)
+
+## 구현 결과 (완료)
+- 설계 그대로 구현됨. `Order`에 `real_production_quantity`/`production_start_millis`/`production_end_millis` 필드 추가, `JsonOrderRepository`의 `fromJson`/`toJson` 갱신.
+- `production/ProductionQueueProcessor.h/.cpp` 신설 — 설계된 백데이팅 체인 알고리즘 그대로 구현(`fetchProducingOrdersByFifo()` → 미시작 주문 시작 처리 → 완료 판정 → 반복).
+- `console/ConsoleUtil.h/.cpp`에 `renderProgressBar(int percent, int width)` 추가 (UTF-8 이스케이프 시퀀스로 `█`/`░` 렌더링, 소스 인코딩 이슈 방지).
+- `view/IProductionView.h`(`ActiveProductionInfo`/`QueuedProductionInfo`), `view/ConsoleProductionView.h/.cpp`, `controller/ProductionController.h/.cpp` 신규 구현 — "출력 화면 예시" 목업 그대로 구현(진행률 바, FIFO 대기 목록 누적 완료 시각 계산 포함).
+- `MainController`에 `production_menu`(다섯 번째 trailing default)와 `ProductionQueueProcessor*`(매 루프 `advanceQueue()` 호출) 연결. `processCommand("5")`가 생산라인 메뉴로 위임되도록 분리(기존엔 "4"/"5"/"6"이 한꺼번에 플레이스홀더 처리됐었음).
+- `main.cpp`에 `ProductionQueueProcessor`/`ConsoleProductionView`/`ProductionController` 인스턴스 배선.
+- gmock 테스트 61개 전체 통과 (`ProductionQueueProcessorTest` 4개: 미시작 주문 시작 처리, 완료 시 재고 반영, 재기동 백데이팅 체인, 생산 중 재고 미반영 / `ProductionControllerTest` 5개: 진행률 계산, 빈 큐 메시지, FIFO 대기 목록 누적 완료 시각, 새로고침 반복, 뒤로가기 / `MainControllerTest` 신규 3개: production_menu 위임, 플레이스홀더, 매 루프 advanceQueue 호출 검증).
+  - **테스트 작성 시 주의점(버그 발견 및 수정)**: `ProductionQueueProcessorTest`/`ProductionControllerTest`에서 `order_repository.findAll()`을 정적(static) `ON_CALL(...).WillByDefault(Return(...))`으로 고정해두면, `advanceQueue()`가 주문을 완료 처리한 뒤 같은 루프 안에서 다시 `findAll()`을 호출할 때도 "완료 전" 상태의 주문이 그대로 조회되어 **`advanceQueue()`의 `while(true)` 루프가 종료되지 않는(무한 루프) 테스트 행(hang)** 이 발생했다. 완료로 이어지는 시나리오는 `save()` 호출 시 벡터를 실제로 갱신하는 `Invoke` 기반 스테이트풀 목(mock)으로, 완료가 필요 없는 시나리오는 `production_end_millis`를 목 시계보다 미래로 설정해 애초에 완료되지 않게 하는 방식으로 수정했다.
+- 실제 실행(수동 스모크 테스트)으로 검증: 평균 생산시간 `0.01`min(약 0.6초)인 시료를 등록 → 재고 0 상태에서 10개 주문 → 재고 부족으로 승인 시 `PRODUCING` 전환(실생산량 10, 총 진행시간 0.1min) → 생산라인 조회 시 진행률 0%로 시작 확인 → 약 7초 대기 후 새로고침("R") → `IDLE` 상태로 전환되고 메인 메뉴 총 재고가 0 → 10 ea로 반영됨을 확인.

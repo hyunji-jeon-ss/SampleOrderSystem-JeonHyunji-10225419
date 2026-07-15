@@ -84,6 +84,8 @@
     <ClCompile Include="OrderControllerTest.cpp" />
     <ClCompile Include="ApprovalControllerTest.cpp" />
     <ClCompile Include="ProductionCalculatorTest.cpp" />
+    <ClCompile Include="ProductionQueueProcessorTest.cpp" />
+    <ClCompile Include="ProductionControllerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SampleOrderSystemLib\SampleOrderSystemLib.vcxproj">

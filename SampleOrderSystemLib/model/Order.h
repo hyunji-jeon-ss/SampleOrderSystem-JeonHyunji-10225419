@@ -13,4 +13,7 @@ struct Order
     OrderStatus status = OrderStatus::RESERVED;
     int shortage_quantity = 0;
     long long enqueued_at_millis = 0;
+    int real_production_quantity = 0;
+    long long production_start_millis = 0;
+    long long production_end_millis = 0;
 };

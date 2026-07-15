@@ -2,6 +2,7 @@
 #include "controller/IInputReader.h"
 #include "controller/ISubMenuController.h"
 #include "controller/MainController.h"
+#include "production/ProductionQueueProcessor.h"
 #include "repository/IOrderRepository.h"
 #include "repository/ISampleRepository.h"
 #include "view/IMainView.h"
@@ -156,6 +157,62 @@ TEST(MainControllerTest, ApprovalMenuCommandDelegatesToSubMenuControllerWhenProv
     EXPECT_CALL(view, showMessage(_)).Times(0);
 
     EXPECT_TRUE(controller.processCommand("3"));
+}
+
+TEST(MainControllerTest, ProductionMenuPlaceholderMessageWhenNotProvided)
+{
+    MockMainView view;
+    MockInputReader input_reader;
+    MockSampleRepository sample_repository;
+    MockOrderRepository order_repository;
+    MockClock clock;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock);
+
+    EXPECT_CALL(view, showMessage(_)).Times(1);
+
+    EXPECT_TRUE(controller.processCommand("5"));
+}
+
+TEST(MainControllerTest, ProductionMenuCommandDelegatesToSubMenuControllerWhenProvided)
+{
+    MockMainView view;
+    MockInputReader input_reader;
+    MockSampleRepository sample_repository;
+    MockOrderRepository order_repository;
+    MockClock clock;
+    MockSubMenuController production_menu;
+    MainController controller(view, input_reader, sample_repository, order_repository, clock,
+        nullptr, nullptr, nullptr, &production_menu);
+
+    EXPECT_CALL(production_menu, run()).Times(1);
+    EXPECT_CALL(view, showMessage(_)).Times(0);
+
+    EXPECT_TRUE(controller.processCommand("5"));
+}
+
+TEST(MainControllerTest, ProductionQueueProcessorAdvanceQueueCalledEachLoopIteration)
+{
+    MockMainView view;
+    MockInputReader input_reader;
+    NiceMock<MockSampleRepository> sample_repository;
+    MockOrderRepository order_repository;
+    NiceMock<MockClock> clock;
+    ProductionQueueProcessor queue_processor(sample_repository, order_repository, clock);
+    MainController controller(view, input_reader, sample_repository, order_repository, clock,
+        nullptr, nullptr, nullptr, nullptr, &queue_processor);
+
+    ON_CALL(sample_repository, findAll()).WillByDefault(Return(std::vector<Sample>{}));
+    EXPECT_CALL(input_reader, readLine())
+        .WillOnce(Return("9"))
+        .WillOnce(Return("0"));
+
+    // 매 루프 반복마다 advanceQueue()(findAll 1회) + buildSummary()(findAll 1회) = 반복당 2회.
+    // 2회 반복(첫 반복 "9" 처리 후 계속, 두 번째 반복 "0"으로 종료) -> 총 4회.
+    EXPECT_CALL(order_repository, findAll())
+        .Times(4)
+        .WillRepeatedly(Return(std::vector<Order>{}));
+
+    controller.run();
 }
 
 TEST(MainControllerTest, UnknownCommandShowsErrorMessage)

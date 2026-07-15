@@ -3,6 +3,8 @@
 #define NOMINMAX
 #include <windows.h>
 
+#include <algorithm>
+
 namespace
 {
     // UTF-8 문자열의 콘솔 표시 너비를 계산한다. ASCII는 1칸, 3바이트 UTF-8(한글 등)과
@@ -35,6 +37,19 @@ std::string padStart(const std::string& text, std::size_t target_width)
     const std::size_t current_width = displayWidth(text);
     if (current_width >= target_width) return text;
     return std::string(target_width - current_width, ' ') + text;
+}
+
+std::string renderProgressBar(int percent, int width)
+{
+    const int clamped_percent = std::clamp(percent, 0, 100);
+    const int filled = width * clamped_percent / 100;
+
+    std::string bar;
+    for (int i = 0; i < width; i++)
+    {
+        bar += (i < filled) ? "\xE2\x96\x88" : "\xE2\x96\x91";
+    }
+    return bar;
 }
 
 void clearConsoleScreen()

@@ -24,7 +24,8 @@ Phase별 상세 설계는 `docs/phase{NN}_design.md`에 기록한다 (예: `docs
 - **Phase 7 완료**: 시료 주문(예약) 기능(`OrderController`) — 입력 내용 확인(Y/N) → 확정 시 저장+주문번호/상태 출력, 취소 시 미저장. `orderStatusToString`/`orderStatusFromString`을 `model/OrderStatusText.h/.cpp`로 공용 추출. 설계 문서: `docs/phase07_design.md`
 - **Phase 8 완료**: 주문 승인/거절 기능(`ApprovalController`) — 재고 이중 관리(`available_stock`/`physical_stock`) 구현. 승인 시점 가용 재고로 충분/부족 분기, 부족 시 `Order.shortage_quantity`/`enqueued_at_millis` 기록. `production/ProductionCalculator.h/.cpp` 신설. 설계 문서: `docs/phase08_design.md`
 - **리팩터링(Phase 8 이후)**: 코드 리뷰에서 발견된 중복/버그 정리 — `JsonSampleRepository`/`JsonOrderRepository`의 파일 I/O 중복을 `repository/JsonFileStore.h/.cpp`(`readJsonArray`/`writeJsonArray`)로 공용화, `ConsoleSampleView`의 메뉴 헤더 `[1]` 중복 출력 버그 수정, `MainController`의 서브메뉴 위임 분기를 `runSubMenuOrShowPlaceholder()` 헬퍼로 정리.
-- 다음: Phase 9(생산라인) — `PRODUCING` 주문의 실시간 생산 처리, FIFO 큐, 재기동 복원.
+- **Phase 9 완료**: 생산라인 기능(`ProductionQueueProcessor`, `ProductionController`) — `PRODUCING` 주문을 단일 FIFO 라인에서 폴링 기반으로 실시간 처리, 완료 시 `physical_stock` 반영, 재기동 시 밀린 완료 건을 백데이팅 체인으로 순서대로 복원. 생산라인 조회 화면은 진행률 바 포함, 새로고침 가능한 반복 조회(이 메뉴만 화면 클리어). `MainController`에 다섯 번째 서브메뉴(`production_menu`)와 `ProductionQueueProcessor*`(매 루프 `advanceQueue()` 호출) 연결. 설계 문서: `docs/phase09_design.md`
+- 다음: Phase 10(출고 처리) — `CONFIRMED → RELEASED` 전환 시 `physical_stock` 차감.
 
 ## 개발 순서
 `PLAN.md`의 Phase 5부터 Phase 12까지 순서대로 진행한다. 각 Phase 완료 시 해당 Phase의 "완료 기준" 항목을 충족했는지 확인한다.

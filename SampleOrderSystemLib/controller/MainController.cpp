@@ -8,7 +8,8 @@
 
 MainController::MainController(IMainView& view, IInputReader& input_reader,
     ISampleRepository& sample_repository, IOrderRepository& order_repository, IClock& clock,
-    ISubMenuController* sample_menu, ISubMenuController* order_menu, ISubMenuController* approval_menu)
+    ISubMenuController* sample_menu, ISubMenuController* order_menu, ISubMenuController* approval_menu,
+    ISubMenuController* production_menu, ProductionQueueProcessor* production_queue_processor)
     : view(view)
     , input_reader(input_reader)
     , sample_repository(sample_repository)
@@ -17,6 +18,8 @@ MainController::MainController(IMainView& view, IInputReader& input_reader,
     , sample_menu(sample_menu)
     , order_menu(order_menu)
     , approval_menu(approval_menu)
+    , production_menu(production_menu)
+    , production_queue_processor(production_queue_processor)
 {
 }
 
@@ -25,6 +28,8 @@ void MainController::run()
     bool running = true;
     while (running)
     {
+        if (production_queue_processor) production_queue_processor->advanceQueue();
+
         clearConsoleScreen();
         view.showMainMenu(buildSummary());
         const std::string command = input_reader.readLine();
@@ -55,7 +60,13 @@ bool MainController::processCommand(const std::string& command)
         return true;
     }
 
-    if (command == "4" || command == "5" || command == "6")
+    if (command == "5")
+    {
+        runSubMenuOrShowPlaceholder(production_menu);
+        return true;
+    }
+
+    if (command == "4" || command == "6")
     {
         runSubMenuOrShowPlaceholder(nullptr);
         return true;

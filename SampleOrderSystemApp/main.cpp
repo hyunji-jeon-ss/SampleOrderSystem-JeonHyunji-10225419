@@ -3,12 +3,15 @@
 #include "controller/ConsoleInputReader.h"
 #include "controller/MainController.h"
 #include "controller/OrderController.h"
+#include "controller/ProductionController.h"
 #include "controller/SampleController.h"
+#include "production/ProductionQueueProcessor.h"
 #include "repository/JsonOrderRepository.h"
 #include "repository/JsonSampleRepository.h"
 #include "view/ConsoleApprovalView.h"
 #include "view/ConsoleMainView.h"
 #include "view/ConsoleOrderView.h"
+#include "view/ConsoleProductionView.h"
 #include "view/ConsoleSampleView.h"
 
 #define NOMINMAX
@@ -27,13 +30,18 @@ int main()
     ConsoleSampleView sample_view;
     ConsoleOrderView order_view;
     ConsoleApprovalView approval_view;
+    ConsoleProductionView production_view;
     ConsoleInputReader input_reader;
+
+    ProductionQueueProcessor queue_processor(sample_repository, order_repository, clock);
 
     SampleController sample_menu(sample_view, input_reader, sample_repository);
     OrderController order_menu(order_view, input_reader, sample_repository, order_repository);
     ApprovalController approval_menu(approval_view, input_reader, sample_repository, order_repository, clock);
+    ProductionController production_menu(
+        production_view, input_reader, sample_repository, order_repository, queue_processor, clock);
     MainController controller(view, input_reader, sample_repository, order_repository, clock,
-        &sample_menu, &order_menu, &approval_menu);
+        &sample_menu, &order_menu, &approval_menu, &production_menu, &queue_processor);
     controller.run();
 
     return 0;

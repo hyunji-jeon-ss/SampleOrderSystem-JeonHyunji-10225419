@@ -189,7 +189,7 @@
 - 생산 진행 중에는 재고 미반영, 완료 후에만 반영됨을 테스트로 검증
 - gmock으로 시간 소스(Clock)를 목킹하여 실시간 의존성 없는 단위 테스트 작성
 
-**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase09_design.md` — 작성 완료(설계), 구현 대기
+**설계 문서**: `SampleOrderSystem-JeonHyunji-10225419/docs/phase09_design.md` — ✅ 완료 (설계+구현)
 
 ---
 

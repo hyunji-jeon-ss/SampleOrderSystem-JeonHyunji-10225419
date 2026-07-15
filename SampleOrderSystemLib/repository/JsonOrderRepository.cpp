@@ -21,7 +21,10 @@ namespace
             element.at("quantity").get<int>(),
             orderStatusFromString(element.at("status").get<std::string>()),
             element.at("shortage_quantity").get<int>(),
-            element.at("enqueued_at_millis").get<long long>()
+            element.at("enqueued_at_millis").get<long long>(),
+            element.at("real_production_quantity").get<int>(),
+            element.at("production_start_millis").get<long long>(),
+            element.at("production_end_millis").get<long long>()
         };
     }
 
@@ -34,7 +37,10 @@ namespace
             {"quantity", order.quantity},
             {"status", orderStatusToString(order.status)},
             {"shortage_quantity", order.shortage_quantity},
-            {"enqueued_at_millis", order.enqueued_at_millis}
+            {"enqueued_at_millis", order.enqueued_at_millis},
+            {"real_production_quantity", order.real_production_quantity},
+            {"production_start_millis", order.production_start_millis},
+            {"production_end_millis", order.production_end_millis}
         };
     }
 }
