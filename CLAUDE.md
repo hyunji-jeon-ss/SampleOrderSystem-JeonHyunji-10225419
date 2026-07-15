@@ -5,11 +5,12 @@
 
 ## 기술 스택 / 컨벤션
 - C++20, Visual Studio(MSBuild, .vcxproj), gmock(NuGet)
+- nlohmann/json (NuGet 패키지 `nlohmann.json`) — `DataPersistence` PoC와 동일한 라이브러리/사용법 유지
 - 코드 컨벤션은 `CODE_CONVENTION.md`를 따른다 (PascalCase 클래스, camelCase 메서드, snake_case 변수 등).
 
 ## 아키텍처
 - MVC 구조: `model/`, `view/`, `controller/`
-- 영속성 계층: 파일(JSON) 기반, `Sample`/`Order` 데이터를 재실행 후에도 유지
+- 영속성 계층: **JSON 파일 기반**(nlohmann/json), `Sample`/`Order` 데이터를 재실행 후에도 유지
 - 재고는 **내부 판단용 가용 재고(availableStock)**와 **화면 표시용 재고(physicalStock)**로 이원화하여 관리 (`PRD.md` 6.4, 6.5 참고)
 - 생산라인은 현실 시간 기반 타이머로 동작하며, 프로그램 재기동 시 저장된 시작/완료 시각을 기준으로 상태를 복원한다 (`PRD.md` 6.6 참고)
 
