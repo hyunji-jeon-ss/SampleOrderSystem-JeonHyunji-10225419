@@ -18,6 +18,8 @@
 ## 설계 문서
 Phase별 상세 설계는 `docs/phase{NN}_design.md`에 기록한다 (예: `docs/phase05_design.md`). 새 Phase를 시작하기 전에 해당 문서를 먼저 작성/갱신한다.
 
+**필수 항목 — 출력 화면 예시**: 콘솔에 새로운 화면/메뉴가 추가되거나 기존 화면의 출력 형식이 바뀌는 Phase라면, 설계 문서에 반드시 실제 콘솔 출력을 흉내 낸 **"출력 화면 예시"(코드 블록)** 섹션을 포함한다. 정상 케이스뿐 아니라 빈 목록/에러 등 주요 분기가 있다면 그 화면 예시도 함께 보여준다. (텍스트 설명만으로는 컬럼 정렬, 줄바꿈, 문구 톤 등을 미리 확인하기 어려워 구현 후 재작업이 잦았던 데서 나온 규칙.)
+
 ## 진행 상황
 - **Phase 5 완료**: 도메인 모델(`Sample`/`Order`/`OrderStatus`), JSON Repository, `IClock`/`SystemClock`, 메인 메뉴 골격(표시·종료만 동작, 1~6번은 플레이스홀더) 구현 및 검증 완료. 설계 문서: `docs/phase05_design.md`
 - **Phase 6 완료**: 시료 등록/조회/검색(`SampleController`), `Sample`에 재고 필드(`physical_stock`/`available_stock`) 추가, `ISubMenuController` 서브메뉴 위임 패턴 확립. 설계 문서: `docs/phase06_design.md`

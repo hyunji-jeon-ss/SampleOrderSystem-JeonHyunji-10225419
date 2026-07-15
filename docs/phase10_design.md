@@ -61,6 +61,46 @@ class IReleaseView
 - `ApprovalOrderRow`/`IApprovalView`와 거의 같은 모양이지만, "충분/부족" 두 갈래였던 확인 화면이 `showReleaseCheck` 하나로 단순화된다(위 불변식 덕분에 분기가 필요 없음).
 - 화면 클리어 없음. "현재 상태" 표기에는 `orderStatusToString()` 재사용.
 
+## 출력 화면 예시
+`ApprovalController`/`ConsoleApprovalView`와 동일한 컬럼 레이아웃(번호/주문번호/고객/시료/수량)을 그대로 재사용한다.
+
+(정상 출고 흐름)
+```
+번호  주문번호            고객                시료                    수량
+1     ORD-20260416-0038   SK하이닉스           SiC 파워기판-6인치       80 ea
+2     ORD-20260416-0041   삼성전자             산화막 웨이퍼-SiO2      150 ea
+선택 > 1
+
+시료          SiC 파워기판-6인치 (S-003)
+현재 재고(화면)  86 ea
+출고 수량        80 ea
+
+출고 처리하시겠습니까?
+[Y] 출고   [N] 취소
+선택 > Y
+
+출고 완료.
+주문번호   ORD-20260416-0038
+현재 상태  RELEASED
+번호  주문번호            고객                시료                    수량
+1     ORD-20260416-0041   삼성전자             산화막 웨이퍼-SiO2      150 ea
+선택 >
+```
+(취소했을 때)
+```
+출고를 취소했습니다.
+주문번호   ORD-20260416-0041
+현재 상태  CONFIRMED
+번호  주문번호            고객                시료                    수량
+1     ORD-20260416-0041   삼성전자             산화막 웨이퍼-SiO2      150 ea
+선택 >
+```
+(출고 대기 중인 주문이 없을 때 — Phase 8 `ApprovalController`와 동일하게 "0 뒤로가기" 안내만 표시)
+```
+출고 대기 중인 주문이 없습니다.
+[0] 뒤로가기 >
+```
+
 ## `ReleaseController` 설계
 ```cpp
 class ReleaseController : public ISubMenuController
