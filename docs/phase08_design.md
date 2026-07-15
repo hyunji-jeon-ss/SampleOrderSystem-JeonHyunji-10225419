@@ -185,3 +185,9 @@ void ApprovalController::handleApprovalFlow(const ApprovalOrderRow& row)
 - `IApprovalView`/`ConsoleApprovalView`, `ApprovalController` 구현. `MainController`에 `approval_menu`(네 번째 trailing default) 연결.
 - gmock 테스트 49개 전체 통과 (`ApprovalControllerTest` 6개, `ProductionCalculatorTest` 5개 신규 — 재고 충분/부족/거절, **연속 승인 시 재고 중복 사용 방지(핵심 검증)**, 잘못된 번호, 뒤로가기).
 - 실제 실행으로 재고 30인 시료에 수량 20 주문 2건을 연속 승인 → 첫 주문은 재고 충분(CONFIRMED), 두 번째 주문은 화면에 "현재 재고(가용) 10 ea"로 정확히 표시되어 부족분 10으로 PRODUCING 전환됨을 확인. 승인 후 `samples.json`에서 `physical_stock`은 그대로, `available_stock`만 정확히 차감된 것도 확인.
+
+## 커밋 이후 리팩터링 (코드 리뷰 반영)
+Phase 8 완료 직후, `JsonSampleRepository`/`JsonOrderRepository`/`ConsoleSampleView`/`MainController`를 대상으로 clean code 관점 코드 리뷰를 진행해 아래를 정리했다 (기능 변경 없음, 49개 테스트 그대로 통과 확인):
+- **Repository 파일 I/O 중복 제거**: 두 Repository에 거의 동일하게 있던 `ifstream`/`ofstream` 처리(빈 파일 체크, JSON 파싱/직렬화)를 `repository/JsonFileStore.h/.cpp`(`readJsonArray`/`writeJsonArray`)로 공용화.
+- **버그 수정**: `ConsoleSampleView::showSampleMenu()`에서 `[1]`이 헤더와 메뉴 옵션에 중복 출력되던 것을 수정.
+- **`MainController` 위임 분기 정리**: `if (menu) menu->run(); else placeholder;` 패턴이 3번 반복되던 것을 `runSubMenuOrShowPlaceholder()` 헬퍼로 통합.
