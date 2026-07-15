@@ -1,5 +1,6 @@
 #include "controller/ProductionController.h"
 
+#include "clock/TimeFormat.h"
 #include "console/ConsoleUtil.h"
 #include "model/OrderStatus.h"
 #include "model/Sample.h"
@@ -63,7 +64,7 @@ void ProductionController::display()
 
     const std::vector<Order> producing = fetchProducingOrdersByFifo(order_repository);
 
-    view.showLineStatus(!producing.empty());
+    view.showLineStatus(!producing.empty(), formatDateTime(clock.nowMillis()));
 
     long long cursor_millis = clock.nowMillis();
 

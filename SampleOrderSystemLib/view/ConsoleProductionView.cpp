@@ -14,13 +14,14 @@ namespace
     constexpr std::size_t kOrderNumberWidth = 20;
     constexpr std::size_t kSampleWidth = 22;
     constexpr std::size_t kQuantityWidth = 10;
+    constexpr std::size_t kTimeWidth = 16;
     constexpr int kProgressBarWidth = 20;
 }
 
-void ConsoleProductionView::showLineStatus(bool is_running)
+void ConsoleProductionView::showLineStatus(bool is_running, const std::string& current_time_text)
 {
     cout << "--------------------------------------------------------------" << endl;
-    cout << "[5] 생산라인 조회   FIFO 방식" << endl;
+    cout << "[5] 생산라인 조회   FIFO 방식   현재시각 " << current_time_text << endl;
     cout << "생산라인 1개 (단일 라인)   현재 상태: " << (is_running ? "RUNNING" : "IDLE") << endl;
     cout << endl;
 }
@@ -58,7 +59,7 @@ void ConsoleProductionView::showQueue(const std::vector<QueuedProductionInfo>& q
     cout << padEnd("순서", kIndexWidth) << padEnd("주문번호", kOrderNumberWidth)
         << padEnd("시료", kSampleWidth) << padStart("주문량", kQuantityWidth)
         << padStart("부족분", kQuantityWidth) << padStart("실생산량", kQuantityWidth)
-        << padStart("예상완료", kQuantityWidth) << endl;
+        << padStart("예상완료", kTimeWidth) << endl;
 
     for (std::size_t i = 0; i < queue.size(); i++)
     {
@@ -68,7 +69,7 @@ void ConsoleProductionView::showQueue(const std::vector<QueuedProductionInfo>& q
             << padStart(std::to_string(info.order.quantity) + " ea", kQuantityWidth)
             << padStart(std::to_string(info.order.shortage_quantity) + " ea", kQuantityWidth)
             << padStart(std::to_string(info.projected_real_production_quantity) + " ea", kQuantityWidth)
-            << padStart(formatDateTime(info.expected_completion_millis), kQuantityWidth) << endl;
+            << padStart(formatShortDateTime(info.expected_completion_millis), kTimeWidth) << endl;
     }
 }
 

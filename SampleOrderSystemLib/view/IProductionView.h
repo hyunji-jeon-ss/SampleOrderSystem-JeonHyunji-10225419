@@ -29,7 +29,7 @@ class IProductionView
     public:
         virtual ~IProductionView() = default;
 
-        virtual void showLineStatus(bool is_running) = 0;
+        virtual void showLineStatus(bool is_running, const std::string& current_time_text) = 0;
         virtual void showActiveProduction(const std::optional<ActiveProductionInfo>& active) = 0;
         virtual void showQueue(const std::vector<QueuedProductionInfo>& queue) = 0;
         virtual void showMessage(const std::string& message) = 0;

@@ -17,7 +17,7 @@ using namespace testing;
 class MockProductionView : public IProductionView
 {
     public:
-        MOCK_METHOD(void, showLineStatus, (bool is_running), (override));
+        MOCK_METHOD(void, showLineStatus, (bool is_running, const std::string& current_time_text), (override));
         MOCK_METHOD(void, showActiveProduction, (const std::optional<ActiveProductionInfo>& active), (override));
         MOCK_METHOD(void, showQueue, (const std::vector<QueuedProductionInfo>& queue), (override));
         MOCK_METHOD(void, showMessage, (const std::string& message), (override));
@@ -115,7 +115,7 @@ TEST(ProductionControllerTest, EmptyQueueShowsNoneAndIdleStatus)
 
     ON_CALL(order_repository, findAll()).WillByDefault(Return(std::vector<Order>{}));
 
-    EXPECT_CALL(view, showLineStatus(false)).Times(1);
+    EXPECT_CALL(view, showLineStatus(false, _)).Times(1);
     EXPECT_CALL(view, showActiveProduction(Eq(std::nullopt))).Times(1);
     EXPECT_CALL(view, showQueue(IsEmpty())).Times(1);
     EXPECT_CALL(input_reader, readLine()).WillOnce(Return("0"));
