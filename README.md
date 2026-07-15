@@ -33,7 +33,7 @@ SampleOrderSystemTest/   # gmock 테스트, Lib 참조
 - `MainController`는 `ISubMenuController*`(시료 관리/시료 주문/주문 승인·거절/생산라인 조회/출고 처리/모니터링)를 nullable로 주입받아 위임하고, `ProductionQueueProcessor*`를 주입받아 매 루프마다 `advanceQueue()`를 호출한다 — 메인 메뉴 1~6번이 모두 연결되어 있다.
 - 재고는 **화면 표시용(`physical_stock`)**과 **내부 판단용(`available_stock`)**으로 이원화되어 있다 (`PRD.md` 6.4 참고) — 주문 승인 시 `available_stock`만 즉시 변하고, `physical_stock`은 생산 완료(Phase 9, `+= real_production_quantity`)와 출고(Phase 10, `-= order.quantity`)에서만 변경된다. 수율 보정으로 생긴 여분(`real_production_quantity - order.quantity`)은 출고 후에도 재고로 남는다.
 - 생산라인은 별도 스레드 없이 **폴링 기반**으로 동작한다: `ProductionQueueProcessor::advanceQueue()`가 메뉴 진입/메인 루프마다 현재 시각과 저장된 완료 예정 시각을 비교해 상태를 갱신하며, 재기동 시 밀려 있던 완료 건도 순서대로("백데이팅 체인") 한 번에 복원한다.
-- 모니터링(`[4]`)은 상태별 주문 건수(REJECTED 제외)와 시료별 재고 현황(여유/부족/고갈, 미출고 수요 합계 기준)을 통합해서 보여준다 — 생산라인 조회와 달리 화면을 클리어하지 않고 새로고침할 때마다 스냅샷이 아래로 계속 쌓인다.
+- 모니터링(`[4]`)은 `[1]` 주문 현황(상태별 건수, REJECTED 제외) / `[2]` 재고 현황(여유/부족/고갈, 미출고 수요 합계 기준)으로 나뉜 선택형 메뉴다 — 생산라인 조회와 달리 화면을 클리어하지 않고 선택할 때마다 결과가 아래로 계속 이어붙는다.
 
 ## 빌드 방법 (Visual Studio)
 1. `SampleOrderSystem.sln`을 Visual Studio로 연다.
@@ -42,7 +42,7 @@ SampleOrderSystemTest/   # gmock 테스트, Lib 참조
 
 ## 실행 방법
 - **앱**: `SampleOrderSystemApp`을 시작 프로젝트로 설정 후 `Ctrl+F5` 실행
-  - `[1]` 시료 관리(등록/조회/검색, 5개씩 페이지네이션) · `[2]` 시료 주문(예약, Y/N 확인) · `[3]` 주문 승인/거절(재고 이중 관리) · `[4]` 모니터링(주문 현황+재고 현황 통합, `[1]` 새로고침) · `[5]` 생산라인 조회(FIFO 진행 현황, `[R]` 새로고침) · `[6]` 출고 처리(`CONFIRMED` 목록, Y/N 확인) 모두 사용 가능
+  - `[1]` 시료 관리(등록/조회/검색, 5개씩 페이지네이션) · `[2]` 시료 주문(예약, Y/N 확인) · `[3]` 주문 승인/거절(재고 이중 관리) · `[4]` 모니터링(`[1]` 주문 현황 / `[2]` 재고 현황) · `[5]` 생산라인 조회(FIFO 진행 현황, `[R]` 새로고침) · `[6]` 출고 처리(`CONFIRMED` 목록, Y/N 확인) 모두 사용 가능
   - `0`으로 종료
 - **테스트**: `SampleOrderSystemTest`를 시작 프로젝트로 설정 후 `Ctrl+F5` 실행
 

@@ -32,7 +32,8 @@ class IMonitoringView
     public:
         virtual ~IMonitoringView() = default;
 
-        virtual void showMonitoring(const std::string& current_time_text,
-            const OrderStatusSummary& order_summary, const std::vector<StockStatusRow>& stock_rows) = 0;
+        virtual void showMenu(const std::string& current_time_text) = 0;
+        virtual void showOrderStatus(const OrderStatusSummary& order_summary) = 0;
+        virtual void showStockStatus(const std::vector<StockStatusRow>& stock_rows) = 0;
         virtual void showMessage(const std::string& message) = 0;
 };

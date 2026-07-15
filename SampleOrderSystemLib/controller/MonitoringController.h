@@ -19,7 +19,6 @@ class MonitoringController : public ISubMenuController
         bool processCommand(const std::string& command);
 
     private:
-        void display();
         OrderStatusSummary buildOrderStatusSummary();
         std::vector<StockStatusRow> buildStockStatusRows();
 

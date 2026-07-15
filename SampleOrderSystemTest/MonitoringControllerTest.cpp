@@ -16,10 +16,9 @@ using namespace testing;
 class MockMonitoringView : public IMonitoringView
 {
     public:
-        MOCK_METHOD(void, showMonitoring,
-            (const std::string& current_time_text, const OrderStatusSummary& order_summary,
-                const std::vector<StockStatusRow>& stock_rows),
-            (override));
+        MOCK_METHOD(void, showMenu, (const std::string& current_time_text), (override));
+        MOCK_METHOD(void, showOrderStatus, (const OrderStatusSummary& order_summary), (override));
+        MOCK_METHOD(void, showStockStatus, (const std::vector<StockStatusRow>& stock_rows), (override));
         MOCK_METHOD(void, showMessage, (const std::string& message), (override));
 };
 
@@ -68,10 +67,10 @@ namespace
 TEST(MonitoringControllerTest, OrderStatusSummaryCountsEachStatusAndExcludesRejected)
 {
     NiceMock<MockMonitoringView> view;
-    MockInputReader input_reader;
     NiceMock<MockSampleRepository> sample_repository;
     NiceMock<MockOrderRepository> order_repository;
     NiceMock<MockClock> clock;
+    MockInputReader input_reader;
     MonitoringController controller(view, input_reader, sample_repository, order_repository, clock);
 
     ON_CALL(order_repository, findAll())
@@ -84,10 +83,10 @@ TEST(MonitoringControllerTest, OrderStatusSummaryCountsEachStatusAndExcludesReje
             makeOrder("ORD-0006", "S-001", 10, OrderStatus::REJECTED) }));
 
     OrderStatusSummary captured;
-    EXPECT_CALL(view, showMonitoring(_, _, _)).WillOnce(SaveArg<1>(&captured));
-    EXPECT_CALL(input_reader, readLine()).WillOnce(Return("0"));
+    EXPECT_CALL(view, showOrderStatus(_)).WillOnce(SaveArg<0>(&captured));
+    EXPECT_CALL(view, showStockStatus(_)).Times(0);
 
-    controller.run();
+    EXPECT_TRUE(controller.processCommand("1"));
 
     EXPECT_EQ(captured.reserved_count, 2);
     EXPECT_EQ(captured.confirmed_count, 1);
@@ -110,10 +109,10 @@ TEST(MonitoringControllerTest, StockStatusSufficientWhenStockCoversPendingDemand
         .WillByDefault(Return(std::vector<Order>{ makeOrder("ORD-0001", "S-001", 30, OrderStatus::RESERVED) }));
 
     std::vector<StockStatusRow> captured;
-    EXPECT_CALL(view, showMonitoring(_, _, _)).WillOnce(SaveArg<2>(&captured));
-    EXPECT_CALL(input_reader, readLine()).WillOnce(Return("0"));
+    EXPECT_CALL(view, showStockStatus(_)).WillOnce(SaveArg<0>(&captured));
+    EXPECT_CALL(view, showOrderStatus(_)).Times(0);
 
-    controller.run();
+    EXPECT_TRUE(controller.processCommand("2"));
 
     ASSERT_EQ(captured.size(), 1u);
     EXPECT_EQ(captured[0].pending_demand, 30);
@@ -137,10 +136,9 @@ TEST(MonitoringControllerTest, StockStatusShortageWhenStockBelowPendingDemand)
             makeOrder("ORD-0002", "S-001", 10, OrderStatus::CONFIRMED) }));
 
     std::vector<StockStatusRow> captured;
-    EXPECT_CALL(view, showMonitoring(_, _, _)).WillOnce(SaveArg<2>(&captured));
-    EXPECT_CALL(input_reader, readLine()).WillOnce(Return("0"));
+    EXPECT_CALL(view, showStockStatus(_)).WillOnce(SaveArg<0>(&captured));
 
-    controller.run();
+    EXPECT_TRUE(controller.processCommand("2"));
 
     ASSERT_EQ(captured.size(), 1u);
     EXPECT_EQ(captured[0].pending_demand, 25);
@@ -161,10 +159,9 @@ TEST(MonitoringControllerTest, StockStatusDepletedWhenPhysicalStockIsZeroRegardl
     ON_CALL(order_repository, findAll()).WillByDefault(Return(std::vector<Order>{}));
 
     std::vector<StockStatusRow> captured;
-    EXPECT_CALL(view, showMonitoring(_, _, _)).WillOnce(SaveArg<2>(&captured));
-    EXPECT_CALL(input_reader, readLine()).WillOnce(Return("0"));
+    EXPECT_CALL(view, showStockStatus(_)).WillOnce(SaveArg<0>(&captured));
 
-    controller.run();
+    EXPECT_TRUE(controller.processCommand("2"));
 
     ASSERT_EQ(captured.size(), 1u);
     EXPECT_EQ(captured[0].pending_demand, 0);
@@ -189,33 +186,63 @@ TEST(MonitoringControllerTest, PendingDemandExcludesRejectedAndReleasedOrders)
             makeOrder("ORD-0003", "S-001", 5, OrderStatus::RESERVED) }));
 
     std::vector<StockStatusRow> captured;
-    EXPECT_CALL(view, showMonitoring(_, _, _)).WillOnce(SaveArg<2>(&captured));
-    EXPECT_CALL(input_reader, readLine()).WillOnce(Return("0"));
+    EXPECT_CALL(view, showStockStatus(_)).WillOnce(SaveArg<0>(&captured));
 
-    controller.run();
+    EXPECT_TRUE(controller.processCommand("2"));
 
     ASSERT_EQ(captured.size(), 1u);
     EXPECT_EQ(captured[0].pending_demand, 5);
 }
 
-TEST(MonitoringControllerTest, RefreshCommandLoopsAndReQueriesRepositories)
+TEST(MonitoringControllerTest, EmptySampleListShowsEmptyStockRows)
 {
     NiceMock<MockMonitoringView> view;
     MockInputReader input_reader;
     NiceMock<MockSampleRepository> sample_repository;
-    MockOrderRepository order_repository;
+    NiceMock<MockOrderRepository> order_repository;
     NiceMock<MockClock> clock;
     MonitoringController controller(view, input_reader, sample_repository, order_repository, clock);
 
-    ON_CALL(order_repository, findAll()).WillByDefault(Return(std::vector<Order>{}));
-    // display() 1회당 buildOrderStatusSummary() + buildStockStatusRows()가 각각 findAll()을 1회씩 호출 -> 2회.
-    // 2회 반복(첫 반복 "1" 처리 후 계속, 두 번째 반복 "0"으로 종료) -> 총 4회.
-    EXPECT_CALL(order_repository, findAll()).Times(4);
+    ON_CALL(sample_repository, findAll()).WillByDefault(Return(std::vector<Sample>{}));
+
+    std::vector<StockStatusRow> captured;
+    EXPECT_CALL(view, showStockStatus(_)).WillOnce(SaveArg<0>(&captured));
+
+    EXPECT_TRUE(controller.processCommand("2"));
+
+    EXPECT_TRUE(captured.empty());
+}
+
+TEST(MonitoringControllerTest, MenuLoopsShowingMenuEachIterationUntilBack)
+{
+    NiceMock<MockMonitoringView> view;
+    MockInputReader input_reader;
+    NiceMock<MockSampleRepository> sample_repository;
+    NiceMock<MockOrderRepository> order_repository;
+    NiceMock<MockClock> clock;
+    MonitoringController controller(view, input_reader, sample_repository, order_repository, clock);
+
+    EXPECT_CALL(view, showMenu(_)).Times(3);
     EXPECT_CALL(input_reader, readLine())
         .WillOnce(Return("1"))
+        .WillOnce(Return("2"))
         .WillOnce(Return("0"));
 
     controller.run();
+}
+
+TEST(MonitoringControllerTest, UnknownCommandShowsErrorAndContinuesLoop)
+{
+    NiceMock<MockMonitoringView> view;
+    MockInputReader input_reader;
+    NiceMock<MockSampleRepository> sample_repository;
+    NiceMock<MockOrderRepository> order_repository;
+    NiceMock<MockClock> clock;
+    MonitoringController controller(view, input_reader, sample_repository, order_repository, clock);
+
+    EXPECT_CALL(view, showMessage(_)).Times(1);
+
+    EXPECT_TRUE(controller.processCommand("9"));
 }
 
 TEST(MonitoringControllerTest, BackCommandStopsLoopImmediately)

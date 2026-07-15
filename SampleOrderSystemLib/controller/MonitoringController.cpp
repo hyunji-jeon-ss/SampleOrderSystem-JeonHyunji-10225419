@@ -20,8 +20,7 @@ void MonitoringController::run()
     bool running = true;
     while (running)
     {
-        display();
-        view.showMessage("[1] 새로고침   [0] 뒤로가기 > ");
+        view.showMenu(formatDateTime(clock.nowMillis()));
 
         const std::string command = input_reader.readLine();
         running = processCommand(command);
@@ -31,12 +30,21 @@ void MonitoringController::run()
 bool MonitoringController::processCommand(const std::string& command)
 {
     if (command == "0") return false;
-    return true;
-}
 
-void MonitoringController::display()
-{
-    view.showMonitoring(formatDateTime(clock.nowMillis()), buildOrderStatusSummary(), buildStockStatusRows());
+    if (command == "1")
+    {
+        view.showOrderStatus(buildOrderStatusSummary());
+        return true;
+    }
+
+    if (command == "2")
+    {
+        view.showStockStatus(buildStockStatusRows());
+        return true;
+    }
+
+    view.showMessage("알 수 없는 명령입니다.");
+    return true;
 }
 
 OrderStatusSummary MonitoringController::buildOrderStatusSummary()
