@@ -96,7 +96,7 @@ last_completion_millis = 없음(-1)
 - `run()`의 매 루프 시작 시(메뉴 그리기 직전) `production_queue_processor`가 있으면 `advanceQueue()`를 호출한다. 이렇게 하면 사용자가 어떤 메뉴에 있든 메인 메뉴로 돌아올 때마다 생산 상태가 최신으로 갱신된다.
 - 생성자에 `ISubMenuController* production_menu = nullptr`도 추가(다섯 번째 서브메뉴), `processCommand("5")`에서 위임한다.
 
-## `ProductionController` / `IProductionView` (읽기 전용, 1회성 조회 — `OrderController`와 동일한 "표시 후 뒤로가기" 패턴)
+## `ProductionController` / `IProductionView` (읽기 전용, "새로고침 가능한" 반복 조회)
 ```cpp
 struct ActiveProductionInfo
 {
@@ -134,16 +134,32 @@ class ProductionController : public ISubMenuController
             ISampleRepository& sample_repository, IOrderRepository& order_repository,
             ProductionQueueProcessor& queue_processor, IClock& clock);
 
-        void run() override;   // advanceQueue() → 현재 상태/처리 중/대기 목록 표시 → "[Enter] 뒤로가기" 대기
+        void run() override;
+        bool processCommand(const std::string& command);   // "R"/"r": 새로고침 계속, "0": 뒤로가기
+
+    private:
+        void display();   // advanceQueue() 호출 → 현재 상태/처리 중/대기 목록 표시
 };
 ```
-- `run()` 시작 시 `queue_processor.advanceQueue()`를 먼저 호출해 최신 상태를 반영한 뒤 조회한다.
+
+**`run()` — 새로고침 루프**:
+```
+반복:
+    화면 클리어
+    display()   // advanceQueue() 먼저 호출해 최신 상태 반영 후 조회
+    "[R] 새로고침   [0] 뒤로가기 > " 표시
+    command = 입력
+    if command == "0": 반복 종료 (뒤로가기)
+    // "R"/"r" 또는 그 외 입력 모두 다시 반복 → 화면이 클리어되고 최신 값으로 다시 그려짐
+```
+- **이 메뉴만 화면 클리어를 사용한다.** Phase 6~8에서는 "결과 메시지가 사용자가 읽기 전에 지워지는 문제" 때문에 서브메뉴 내부에서 클리어를 뺐지만, 생산라인 조회는 매번 갱신되는 "현재 상태 스냅샷"을 보여주는 대시보드 성격이라 정반대다 — 클리어하지 않으면 새로고침할 때마다 화면 아래로 같은 내용이 계속 쌓여서 오히려 보기 나빠진다. 따라서 여기서는 "새로고침 = 화면을 지우고 다시 그림"이 맞는 동작이다.
+- `display()` 시작 시 `queue_processor.advanceQueue()`를 먼저 호출해 최신 상태를 반영한 뒤 조회한다. 그래서 "새로고침"을 누르면 시간이 흐른 만큼 진행률/완료 여부가 실제로 갱신된다.
 - **생산라인 상태**: `PRODUCING` 주문이 하나라도 있으면 `RUNNING`, 없으면 `IDLE`.
 - **현재 처리 중**(FIFO 맨 앞, 이미 `production_start_millis`가 기록된 주문): 주문번호 / 시료명 / 주문량(`order.quantity`) / 재고(`order.quantity - order.shortage_quantity`) → 부족(`order.shortage_quantity`) → 실생산량(`order.real_production_quantity`) / 수율 / 총 진행시간(`total_production_time_min`) / **진행률(%)** / 완료 예정 시각(`formatDateTime(production_end_millis)`)을 모두 보여준다.
   - 진행률 계산: `clamp(0, 100, (now - start) * 100 / (end - start))`. `end == start`(이론상 발생하지 않아야 함)인 경우 100으로 처리해 0-division을 방지한다.
   - 큐가 비어 있으면 "현재 생산 중인 항목이 없습니다."만 표시.
 - **대기 중인 주문**: 나머지 `PRODUCING` 주문들을 FIFO 순서로 나열. 순서/주문번호/시료명/주문량/부족분/실생산량(미리보기)을 보여주고, "예상 완료 시각"은 화면 표시 시점에 다음과 같이 누적 계산한다 — 활성 주문의 `production_end_millis`부터 시작해서, 대기 목록을 순서대로 훑으며 각 주문의 `computeTotalProductionTimeMin(computeRealProductionQuantity(shortage, sample.yield), sample.avg_production_time_min)`을 누적한다. (이 값들은 저장하지 않고 조회 시점에만 계산 — 아직 시작 전이라 실제 생산량/시작시각이 확정되지 않았기 때문)
-- 화면 클리어 없음 (Phase 6~8과 동일 원칙 — 조회 후 "[Enter] 뒤로가기"로 명시적으로 돌아간다).
+- 이 메뉴는 Phase 6~8과 달리 **매 새로고침마다 화면을 클리어한다** (위 "새로고침 루프" 참고).
 
 ## 출력 화면 예시
 ```
@@ -162,7 +178,7 @@ class ProductionController : public ISubMenuController
 2      ORD-20260416-0043   SiC 파워기판-6인치     200 ea   170 ea   185 ea     14:28
 3      ORD-20260416-0044   GaN 에피택셜-4인치     300 ea   80 ea    87 ea      15:02
 
-[Enter] 뒤로가기 >
+[R] 새로고침   [0] 뒤로가기 >
 ```
 (큐가 비어 있을 때)
 ```
@@ -173,7 +189,7 @@ class ProductionController : public ISubMenuController
 현재 생산 중인 항목이 없습니다.
 대기 중인 주문이 없습니다.
 
-[Enter] 뒤로가기 >
+[R] 새로고침   [0] 뒤로가기 >
 ```
 - 진행률 바(`██░░`)는 `ConsoleUtil`에 `renderProgressBar(int percent, int width)` 같은 작은 헬퍼를 추가해 그린다 (예: `width=20`이면 `percent/5`칸을 `█`로, 나머지를 `░`로 채움).
 
@@ -183,7 +199,7 @@ class ProductionController : public ISubMenuController
 - **완료 시각이 지남**: 이미 시작된 주문의 `production_end_millis`를 목 시계가 지나도록 설정 → `advanceQueue()` 호출 시 `physical_stock`에 `real_production_quantity`만큼 반영, 상태 `CONFIRMED`로 전환
 - **재기동 복원(연쇄 완료)**: 큐에 2건 이상 있고 목 시계가 둘 다 완료됐어야 할 시점으로 설정 → 한 번의 `advanceQueue()` 호출로 둘 다 순서대로 완료 처리되는지, 두 번째 주문의 시작 시각이 첫 번째의 완료 시각을 정확히 이어받는지 검증
 - **생산 중에는 재고 미반영**: 시작은 했지만 아직 완료 시각 전인 주문 → `physical_stock`/`available_stock` 모두 변화 없음
-- `ProductionControllerTest` (신규): 현재 처리 중 항목 표시(진행률 계산 포함 — 예: 시작~완료 구간의 50% 지점에서 목 시계를 고정하면 `progress_percent == 50`), 대기 목록 누적 완료 시각 계산, 빈 큐 메시지, "[Enter] 뒤로가기" 대기
+- `ProductionControllerTest` (신규): 현재 처리 중 항목 표시(진행률 계산 포함 — 예: 시작~완료 구간의 50% 지점에서 목 시계를 고정하면 `progress_percent == 50`), 대기 목록 누적 완료 시각 계산, 빈 큐 메시지, `"R"` 입력 시 새로고침 반복(`advanceQueue()` 재호출 확인), `"0"` 입력 시 뒤로가기(루프 종료)
 - `MainControllerTest`에 `production_menu` 위임 케이스 + `production_queue_processor.advanceQueue()`가 매 루프마다 호출되는지 검증하는 케이스 추가
 
 ## 완료 기준
