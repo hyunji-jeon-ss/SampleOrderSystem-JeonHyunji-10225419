@@ -1,9 +1,8 @@
 #include "repository/JsonSampleRepository.h"
 
-#include <nlohmann/json.hpp>
+#include "repository/JsonFileStore.h"
 
 #include <algorithm>
-#include <fstream>
 #include <iomanip>
 #include <sstream>
 
@@ -100,8 +99,7 @@ Sample JsonSampleRepository::save(const Sample& sample)
         root.push_back(toJson(stored_sample));
     }
 
-    std::ofstream output(file_path);
-    output << root.dump(4);
+    writeJsonArray(file_path, root);
 
     return saved_sample;
 }
@@ -117,15 +115,7 @@ std::optional<Sample> JsonSampleRepository::findById(const std::string& id)
 
 std::vector<Sample> JsonSampleRepository::findAll()
 {
-    std::ifstream input(file_path);
-    if (!input.is_open()) return {};
-
-    input.seekg(0, std::ios::end);
-    if (input.tellg() == 0) return {};
-    input.seekg(0, std::ios::beg);
-
-    json root;
-    input >> root;
+    const json root = readJsonArray(file_path);
 
     std::vector<Sample> samples;
     samples.reserve(root.size());

@@ -23,6 +23,7 @@ Phase별 상세 설계는 `docs/phase{NN}_design.md`에 기록한다 (예: `docs
 - **Phase 6 완료**: 시료 등록/조회/검색(`SampleController`), `Sample`에 재고 필드(`physical_stock`/`available_stock`) 추가, `ISubMenuController` 서브메뉴 위임 패턴 확립. 설계 문서: `docs/phase06_design.md`
 - **Phase 7 완료**: 시료 주문(예약) 기능(`OrderController`) — 입력 내용 확인(Y/N) → 확정 시 저장+주문번호/상태 출력, 취소 시 미저장. `orderStatusToString`/`orderStatusFromString`을 `model/OrderStatusText.h/.cpp`로 공용 추출. 설계 문서: `docs/phase07_design.md`
 - **Phase 8 완료**: 주문 승인/거절 기능(`ApprovalController`) — 재고 이중 관리(`available_stock`/`physical_stock`) 구현. 승인 시점 가용 재고로 충분/부족 분기, 부족 시 `Order.shortage_quantity`/`enqueued_at_millis` 기록. `production/ProductionCalculator.h/.cpp` 신설. 설계 문서: `docs/phase08_design.md`
+- **리팩터링(Phase 8 이후)**: 코드 리뷰에서 발견된 중복/버그 정리 — `JsonSampleRepository`/`JsonOrderRepository`의 파일 I/O 중복을 `repository/JsonFileStore.h/.cpp`(`readJsonArray`/`writeJsonArray`)로 공용화, `ConsoleSampleView`의 메뉴 헤더 `[1]` 중복 출력 버그 수정, `MainController`의 서브메뉴 위임 분기를 `runSubMenuOrShowPlaceholder()` 헬퍼로 정리.
 - 다음: Phase 9(생산라인) — `PRODUCING` 주문의 실시간 생산 처리, FIFO 큐, 재기동 복원.
 
 ## 개발 순서

@@ -39,51 +39,42 @@ bool MainController::processCommand(const std::string& command)
 
     if (command == "1")
     {
-        if (sample_menu)
-        {
-            sample_menu->run();
-        }
-        else
-        {
-            view.showMessage("아직 구현되지 않은 기능입니다. (다음 Phase에서 구현 예정)");
-        }
+        runSubMenuOrShowPlaceholder(sample_menu);
         return true;
     }
 
     if (command == "2")
     {
-        if (order_menu)
-        {
-            order_menu->run();
-        }
-        else
-        {
-            view.showMessage("아직 구현되지 않은 기능입니다. (다음 Phase에서 구현 예정)");
-        }
+        runSubMenuOrShowPlaceholder(order_menu);
         return true;
     }
 
     if (command == "3")
     {
-        if (approval_menu)
-        {
-            approval_menu->run();
-        }
-        else
-        {
-            view.showMessage("아직 구현되지 않은 기능입니다. (다음 Phase에서 구현 예정)");
-        }
+        runSubMenuOrShowPlaceholder(approval_menu);
         return true;
     }
 
     if (command == "4" || command == "5" || command == "6")
     {
-        view.showMessage("아직 구현되지 않은 기능입니다. (다음 Phase에서 구현 예정)");
+        runSubMenuOrShowPlaceholder(nullptr);
         return true;
     }
 
     view.showMessage("알 수 없는 명령입니다.");
     return true;
+}
+
+void MainController::runSubMenuOrShowPlaceholder(ISubMenuController* menu)
+{
+    if (menu)
+    {
+        menu->run();
+    }
+    else
+    {
+        view.showMessage("아직 구현되지 않은 기능입니다. (다음 Phase에서 구현 예정)");
+    }
 }
 
 MainMenuSummary MainController::buildSummary()

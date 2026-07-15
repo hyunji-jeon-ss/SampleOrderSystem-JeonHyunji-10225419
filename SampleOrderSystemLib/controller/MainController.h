@@ -22,6 +22,7 @@ class MainController
 
     private:
         MainMenuSummary buildSummary();
+        void runSubMenuOrShowPlaceholder(ISubMenuController* menu);
 
         IMainView& view;
         IInputReader& input_reader;

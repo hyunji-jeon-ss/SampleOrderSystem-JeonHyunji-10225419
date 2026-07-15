@@ -2,11 +2,9 @@
 
 #include "clock/TimeFormat.h"
 #include "model/OrderStatusText.h"
-
-#include <nlohmann/json.hpp>
+#include "repository/JsonFileStore.h"
 
 #include <algorithm>
-#include <fstream>
 #include <iomanip>
 #include <sstream>
 
@@ -103,8 +101,7 @@ Order JsonOrderRepository::save(const Order& order)
         root.push_back(toJson(stored_order));
     }
 
-    std::ofstream output(file_path);
-    output << root.dump(4);
+    writeJsonArray(file_path, root);
 
     return saved_order;
 }
@@ -120,15 +117,7 @@ std::optional<Order> JsonOrderRepository::findByOrderNumber(const std::string& o
 
 std::vector<Order> JsonOrderRepository::findAll()
 {
-    std::ifstream input(file_path);
-    if (!input.is_open()) return {};
-
-    input.seekg(0, std::ios::end);
-    if (input.tellg() == 0) return {};
-    input.seekg(0, std::ios::beg);
-
-    json root;
-    input >> root;
+    const json root = readJsonArray(file_path);
 
     std::vector<Order> orders;
     orders.reserve(root.size());

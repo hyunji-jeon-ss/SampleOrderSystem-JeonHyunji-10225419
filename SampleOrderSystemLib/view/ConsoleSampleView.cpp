@@ -27,7 +27,7 @@ namespace
 void ConsoleSampleView::showSampleMenu()
 {
     cout << "--------------------------------------------------------------" << endl;
-    cout << "[1] 시료 관리" << endl;
+    cout << "시료 관리" << endl;
     cout << "[1] 시료 등록   [2] 시료 조회   [3] 시료 검색   [0] 뒤로가기" << endl;
     cout << "선택 > ";
 }

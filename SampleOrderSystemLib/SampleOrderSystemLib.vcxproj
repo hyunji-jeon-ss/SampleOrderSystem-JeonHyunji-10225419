@@ -78,6 +78,7 @@
     <ClInclude Include="clock\TimeFormat.h" />
     <ClInclude Include="repository\ISampleRepository.h" />
     <ClInclude Include="repository\IOrderRepository.h" />
+    <ClInclude Include="repository\JsonFileStore.h" />
     <ClInclude Include="repository\JsonSampleRepository.h" />
     <ClInclude Include="repository\JsonOrderRepository.h" />
     <ClInclude Include="view\IMainView.h" />
@@ -103,6 +104,7 @@
     <ClCompile Include="clock\TimeFormat.cpp" />
     <ClCompile Include="model\OrderStatusText.cpp" />
     <ClCompile Include="production\ProductionCalculator.cpp" />
+    <ClCompile Include="repository\JsonFileStore.cpp" />
     <ClCompile Include="repository\JsonSampleRepository.cpp" />
     <ClCompile Include="repository\JsonOrderRepository.cpp" />
     <ClCompile Include="view\ConsoleMainView.cpp" />
